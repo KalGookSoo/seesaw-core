@@ -22,7 +22,7 @@ import java.util.List;
 @Getter
 @Setter(AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public final class ArticleModel extends AbstractHierarchicalModel<SiteModel> implements Hierarchical<SiteModel, String> {
+public final class ArticleModel extends AbstractHierarchicalModel<ArticleModel> implements Hierarchical<ArticleModel, String> {
 
     @Comment("노출여부")
     private boolean exposed;
@@ -62,7 +62,7 @@ public final class ArticleModel extends AbstractHierarchicalModel<SiteModel> imp
     private List<VoteModel> votes = new ArrayList<>();
 
     @Override
-    public void addChild(SiteModel child) {
+    public void addChild(ArticleModel child) {
         getChildren().add(child);
         child.setParentId(getId());
         // ArticleModel은 SiteModel이 아니므로 parent 참조는 설정하지 않습니다.
