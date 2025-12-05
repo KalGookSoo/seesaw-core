@@ -243,26 +243,11 @@ public class DefaultSiteService implements SiteService {
 
     @Override
     public void deleteSite(String id) {
-        // 사이트에 종속된 모든 영속성 데이터를 먼저 제거하고 삭제 가능하도록 할 것
-        Site site = siteRepository.getReferenceById(id);
-
         // 첨부파일 삭제
         List<Attachment> attachments = attachmentRepository.findAllByReferenceIdIn(Collections.singletonList(id));
         attachmentRepository.deleteAllInBatch(attachments);
         attachments.stream().map(attachment -> filepath + attachment.getPathName() + File.separator + attachment.getName()).forEach(FileIOService::delete);
 
-        // 카테고리 삭제
-//        categoryRepository
-
-        // 게시글 삭제
-
-        // 댓글 삭제
-
-        // 투표 삭제
-
-        // 뷰 삭제
-
-        // 사이트 삭제
         siteRepository.deleteById(id);
     }
 
