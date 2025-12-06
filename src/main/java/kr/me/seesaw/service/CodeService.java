@@ -9,8 +9,8 @@ import java.util.List;
  */
 public interface CodeService {
 
-    List<CodeModel> get();
+    List<CodeModel> getAllCodes();
 
-    List<CodeModel> findByName(String name);
+    List<CodeModel> getAllCodesByName(String name);
 
 }

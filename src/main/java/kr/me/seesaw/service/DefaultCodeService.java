@@ -1,7 +1,5 @@
 package kr.me.seesaw.service;
 
-import kr.me.seesaw.core.hierarchy.HierarchicalFactory;
-import kr.me.seesaw.domain.Code;
 import kr.me.seesaw.model.CodeModel;
 import kr.me.seesaw.repository.CodeRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,17 +18,16 @@ public class DefaultCodeService implements CodeService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<CodeModel> get() {
-        List<CodeModel> models = codeRepository.findAll(Sort.by(Sort.Direction.ASC, "sequence"))
+    public List<CodeModel> getAllCodes() {
+        return codeRepository.findAll(Sort.by(Sort.Direction.ASC, "sequence"))
                 .stream()
                 .map(CodeModel::new)
                 .toList();
-        return HierarchicalFactory.build(models);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<CodeModel> findByName(String name) {
+    public List<CodeModel> getAllCodesByName(String name) {
         return codeRepository.findByName(name)
                 .stream()
                 .map(CodeModel::new)
