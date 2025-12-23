@@ -3,6 +3,7 @@ package kr.me.seesaw.domain;
 import jakarta.persistence.*;
 import jakarta.persistence.Index;
 import kr.me.seesaw.command.CreateCategoryCommand;
+import kr.me.seesaw.command.MoveCategoryCommand;
 import kr.me.seesaw.command.UpdateCategoryCommand;
 import kr.me.seesaw.domain.vo.CategoryType;
 import lombok.EqualsAndHashCode;
@@ -77,6 +78,12 @@ public class Category extends AbstractHierarchical<Category> {
         site.setId(command.getSiteId());
         category.site = site;
 
+        if (command.getParentId() != null) {
+            Category parent = new Category();
+            parent.setId(command.getParentId());
+            category.parent = parent;
+        }
+
         return category;
     }
 
@@ -90,6 +97,25 @@ public class Category extends AbstractHierarchical<Category> {
         this.sequence = command.getSequence();
 
         this.getSite().setId(command.getSiteId());
+
+        if (command.getParentId() != null) {
+            Category parent = new Category();
+            parent.setId(command.getParentId());
+            this.parent = parent;
+        } else {
+            this.parent = null;
+        }
+    }
+
+    public void move(MoveCategoryCommand command) {
+        this.sequence = command.getSequence();
+        if (command.getParentId() != null) {
+            Category parent = new Category();
+            parent.setId(command.getParentId());
+            this.parent = parent;
+        } else {
+            this.parent = null;
+        }
     }
 
 }

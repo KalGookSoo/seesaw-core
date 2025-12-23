@@ -1,13 +1,16 @@
 package kr.me.seesaw.service;
 
 import kr.me.seesaw.command.CreateCategoryCommand;
+import kr.me.seesaw.command.MoveCategoryCommand;
 import kr.me.seesaw.command.UpdateCategoryCommand;
 import kr.me.seesaw.config.TestDataInitializerConfig;
+import kr.me.seesaw.domain.Category;
 import kr.me.seesaw.domain.Site;
 import kr.me.seesaw.domain.vo.CategoryType;
 import kr.me.seesaw.model.CategoryModel;
 import kr.me.seesaw.repository.CategoryRepository;
 import kr.me.seesaw.repository.SiteRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +23,7 @@ import org.springframework.test.context.TestConstructor;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,13 +33,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class DefaultCategoryServiceTest {
 
-    private CategoryService categoryService;
-
     private final TestEntityManager entityManager;
 
     private final CategoryRepository categoryRepository;
 
     private final SiteRepository siteRepository;
+
+    private CategoryService categoryService;
 
     private String siteId1;
 
@@ -124,7 +128,7 @@ class DefaultCategoryServiceTest {
                 .build();
 
         // when
-        CategoryModel updated = categoryService.update(saved.getId(), command);
+        CategoryModel updated = categoryService.updateCategory(saved.getId(), command);
         entityManager.flush();
 
         // then
@@ -174,6 +178,27 @@ class DefaultCategoryServiceTest {
         assertTrue(list.size() >= 3);
         // 시퀀스 오름차순으로 첫 번째가 sequence=0인 "기타"가 되어야 함
         assertEquals(0, list.get(0).getSequence());
+    }
+
+    @Test
+    @DisplayName("카테고리를 이동하면 순서가 변경됩니다.")
+    void moveShouldUpdateParentAndSequence() {
+        // given
+        List<Site> sites = siteRepository.findAll();
+        List<Category> categories = sites.get(0).getCategories();
+        Category category = categories.get(0);
+        MoveCategoryCommand moveCategoryCommand = MoveCategoryCommand.builder()
+                .parentId(Optional.ofNullable(category.getParent()).map(Category::getId).orElse(null))
+                .sequence(3)
+                .build();
+
+        // when
+        CategoryModel movedCategory = categoryService.moveCategory(category.getId(), moveCategoryCommand);
+        entityManager.flush();
+        entityManager.clear();
+
+        // then
+        Assertions.assertEquals(3, movedCategory.getSequence());
     }
 
     private CreateCategoryCommand createCommand(String siteId, String name, int siteExposedOrder, int sequence) {

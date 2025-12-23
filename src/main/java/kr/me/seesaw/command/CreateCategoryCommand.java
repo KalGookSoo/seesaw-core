@@ -53,4 +53,7 @@ public class CreateCategoryCommand implements Serializable {
     @Schema(description = "사이트 식별자(UUID)", example = "8f14e45f-ea9d-4b1c-a3a4-12c4b2a9c001", requiredMode = Schema.RequiredMode.REQUIRED)
     private String siteId;
 
+    @Schema(description = "부모 카테고리 식별자(UUID)", example = "8f14e45f-ea9d-4b1c-a3a4-12c4b2a9c001")
+    private String parentId;
+
 }

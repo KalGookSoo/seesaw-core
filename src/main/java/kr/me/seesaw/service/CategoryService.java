@@ -1,6 +1,7 @@
 package kr.me.seesaw.service;
 
 import kr.me.seesaw.command.CreateCategoryCommand;
+import kr.me.seesaw.command.MoveCategoryCommand;
 import kr.me.seesaw.command.UpdateCategoryCommand;
 import kr.me.seesaw.model.CategoryModel;
 
@@ -12,10 +13,12 @@ public interface CategoryService {
 
     CategoryModel getCategoryById(String id);
 
-    CategoryModel update(String id, UpdateCategoryCommand command);
+    CategoryModel updateCategory(String id, UpdateCategoryCommand command);
 
     void deleteCategoryById(String id);
 
     List<CategoryModel> getCategoriesBySiteId(String siteId);
+
+    CategoryModel moveCategory(String id, MoveCategoryCommand command);
 
 }

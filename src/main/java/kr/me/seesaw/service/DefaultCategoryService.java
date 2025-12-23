@@ -1,6 +1,7 @@
 package kr.me.seesaw.service;
 
 import kr.me.seesaw.command.CreateCategoryCommand;
+import kr.me.seesaw.command.MoveCategoryCommand;
 import kr.me.seesaw.command.UpdateCategoryCommand;
 import kr.me.seesaw.core.hierarchy.HierarchicalFactory;
 import kr.me.seesaw.domain.Category;
@@ -38,7 +39,7 @@ public class DefaultCategoryService implements CategoryService {
     }
 
     @Override
-    public CategoryModel update(String id, UpdateCategoryCommand command) {
+    public CategoryModel updateCategory(String id, UpdateCategoryCommand command) {
         Category category = categoryRepository.getReferenceById(id);
         category.update(command);
         Category updatedCategory = categoryRepository.save(category);
@@ -58,6 +59,15 @@ public class DefaultCategoryService implements CategoryService {
                 .map(CategoryModel::new)
                 .toList();
         return HierarchicalFactory.build(models);
+    }
+
+    @Override
+    public CategoryModel moveCategory(String id, MoveCategoryCommand command) {
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당 카테고리가 존재하지 않습니다. id: " + id));
+        category.move(command);
+        Category updatedCategory = categoryRepository.save(category);
+        return new CategoryModel(updatedCategory);
     }
 
 }

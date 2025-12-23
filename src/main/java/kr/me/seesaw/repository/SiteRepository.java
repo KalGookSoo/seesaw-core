@@ -8,6 +8,8 @@ import java.util.Optional;
 
 public interface SiteRepository extends Repository<Site, String> {
 
+    List<Site> findAll();
+
     Site getReferenceById(String id);
 
     Site save(Site site);
