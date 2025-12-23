@@ -18,7 +18,7 @@ public interface UserPrincipalRepository extends Repository<User, String> {
      * @param username 계정명
      * @return 계정 인증 주체
      */
-    @EntityGraph(attributePaths = {"roles"})
+    @EntityGraph(attributePaths = {"roleMappings"})
     Optional<User> findByUsername(@NonNull String username);
 
 }
