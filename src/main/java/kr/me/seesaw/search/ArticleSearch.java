@@ -4,12 +4,9 @@ import kr.me.seesaw.domain.vo.CategoryType;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.util.Optional;
 
 @Data
-public class ArticleSearch implements UriComponentsProvider {
+public class ArticleSearch {
 
     private String categoryId;
 
@@ -20,16 +17,6 @@ public class ArticleSearch implements UriComponentsProvider {
     private String keyField;
 
     private String keyWord;
-
-    @Override
-    public UriComponentsBuilder getUriComponentsBuilder() {
-        return UriComponentsProvider.super.getUriComponentsBuilder()
-                .queryParamIfPresent("categoryId", Optional.ofNullable(categoryId))
-                .queryParamIfPresent("categoryType", Optional.ofNullable(categoryType))
-                .queryParamIfPresent("viewType", Optional.ofNullable(viewType))
-                .queryParamIfPresent("keyField", Optional.ofNullable(keyField))
-                .queryParamIfPresent("keyWord", Optional.ofNullable(keyWord));
-    }
 
     @Getter
     @RequiredArgsConstructor
