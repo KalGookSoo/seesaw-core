@@ -54,4 +54,10 @@ public class Permission extends BaseEntity {
         return new Permission(targetId, roleId, mask);
     }
 
+    public void update(String targetId, String roleId, int mask) {
+        this.targetId = targetId;
+        this.roleId = roleId;
+        this.mask = mask;
+    }
+
 }
