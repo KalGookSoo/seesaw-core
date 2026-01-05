@@ -11,6 +11,8 @@ public interface RoleRepository extends Repository<Role, String> {
 
     Role save(Role role);
 
+    List<Role> findAll();
+
     List<Role> findAllByIdIn(Collection<String> ids);
 
     Optional<Role> findByName(String name);
