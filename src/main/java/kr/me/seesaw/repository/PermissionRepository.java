@@ -12,6 +12,8 @@ public interface PermissionRepository extends Repository<Permission, String> {
 
     List<Permission> findAllByRoleId(String roleId);
 
+    List<Permission> findAllByTargetId(String targetId);
+
     Optional<Permission> findByRoleIdAndTargetId(String roleId, String targetId);
 
 }
