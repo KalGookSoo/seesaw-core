@@ -43,6 +43,7 @@ public class DefaultCategoryService implements CategoryService {
         Category category = categoryRepository.getReferenceById(id);
         category.update(command);
         Category updatedCategory = categoryRepository.save(category);
+        categoryRepository.flush();
         return new CategoryModel(updatedCategory);
     }
 
