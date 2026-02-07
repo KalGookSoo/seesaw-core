@@ -19,4 +19,6 @@ public interface CategoryRepository extends Repository<Category, String> {
 
     Collection<Category> findAllBySiteId(String siteId, Sort sort);
 
+    void flush();
+
 }
