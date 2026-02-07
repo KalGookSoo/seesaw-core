@@ -20,7 +20,7 @@ import static lombok.AccessLevel.PROTECTED;
 @EqualsAndHashCode
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
-public class Email implements Serializable {
+public final class Email implements Serializable {
 
     private String id;
 

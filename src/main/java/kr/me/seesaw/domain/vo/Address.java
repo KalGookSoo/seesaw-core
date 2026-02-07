@@ -18,7 +18,7 @@ import static lombok.AccessLevel.PROTECTED;
 @EqualsAndHashCode
 @NoArgsConstructor(access = PROTECTED)
 @AllArgsConstructor
-public class Address implements Serializable {
+public final class Address implements Serializable {
 
     private String zipcode;
 
