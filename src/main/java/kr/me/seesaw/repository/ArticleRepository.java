@@ -21,4 +21,6 @@ public interface ArticleRepository extends Repository<Article, String> {
 
     List<Article> findAllByCategoryIdAndFixed(String categoryId, boolean fixed, Sort sort);
 
+    Article getReferenceById(String id);
+
 }
