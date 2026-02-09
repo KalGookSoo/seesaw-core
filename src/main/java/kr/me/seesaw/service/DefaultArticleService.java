@@ -193,7 +193,7 @@ public class DefaultArticleService implements ArticleService {
         Iterator<Element> iterator = document.select("img[src*=\"blob:\"]").iterator();
 
         for (MultipartFile multipartFile : command.getInlineImages()) {
-            Attachment attachment = Attachment.create(article.getId(), Attachment.Type.INLINE_IMAGE, multipartFile);
+            Attachment attachment = Attachment.create(savedArticle.getId(), Attachment.Type.INLINE_IMAGE, multipartFile);
             writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), multipartFile.getBytes());
             attachmentRepository.save(attachment);
 
@@ -208,7 +208,7 @@ public class DefaultArticleService implements ArticleService {
 
         // 첨부파일
         for (MultipartFile multipartFile : command.getMultipartFiles()) {
-            Attachment attachment = Attachment.create(article.getId(), Attachment.Type.ATTACHMENT, multipartFile);
+            Attachment attachment = Attachment.create(savedArticle.getId(), Attachment.Type.ATTACHMENT, multipartFile);
             writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), multipartFile.getBytes());
             attachmentRepository.save(attachment);
         }
@@ -216,7 +216,6 @@ public class DefaultArticleService implements ArticleService {
         // 인라인이미지 링크를 첨부파일 API로 치환한 본문으로 재할당한다
         Safelist safelist = Safelist.relaxed().preserveRelativeLinks(true);
         article.setContent(Jsoup.clean(document.body().html(), "http://localhost", safelist));
-        articleRepository.save(article);
         return new ArticleModel(articleRepository.save(article));
     }
 
@@ -273,7 +272,6 @@ public class DefaultArticleService implements ArticleService {
             writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), multipartFile.getBytes());
             attachmentRepository.save(attachment);
         }
-        return new ArticleModel(article);
 
         return new ArticleModel(articleRepository.save(article));
     }
