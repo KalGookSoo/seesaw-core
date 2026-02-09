@@ -29,7 +29,7 @@ public class DefaultSiteService implements SiteService {
 
     private final AttachmentRepository attachmentRepository;
 
-    private final ArticleSearchRepository articleSearchRepository;
+    private final ArticleQueryRepository articleQueryRepository;
 
     private final UserRepository userRepository;
 
@@ -37,14 +37,13 @@ public class DefaultSiteService implements SiteService {
             @Value("${kr.me.seesaw.filepath}") String filepath,
             SiteRepository siteRepository,
             AttachmentRepository attachmentRepository,
-            ArticleSearchRepository articleSearchRepository,
-            UserRepository userRepository,
-            CategoryRepository categoryRepository
+            ArticleQueryRepository articleQueryRepository,
+            UserRepository userRepository
     ) {
         this.filepath = filepath;
         this.siteRepository = siteRepository;
         this.attachmentRepository = attachmentRepository;
-        this.articleSearchRepository = articleSearchRepository;
+        this.articleQueryRepository = articleQueryRepository;
         this.userRepository = userRepository;
     }
 
@@ -92,7 +91,7 @@ public class DefaultSiteService implements SiteService {
                 .toList();
         LocalDateTime cutoffDate = LocalDateTime.now().minusDays(7);
 
-        List<ArticleModel> articles = articleSearchRepository.findAllByCategoryId(categoryIds, cutoffDate)
+        List<ArticleModel> articles = articleQueryRepository.findAllByCategoryId(categoryIds, cutoffDate)
                 .stream()
                 .map(ArticleModel::new)
                 .sorted(Comparator.comparing(BaseModel::getCreatedDate))
