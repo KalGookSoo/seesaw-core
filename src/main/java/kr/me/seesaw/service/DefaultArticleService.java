@@ -39,7 +39,7 @@ public class DefaultArticleService implements ArticleService {
 
     private final ArticleRepository articleRepository;
 
-    private final ArticleSearchRepository articleSearchRepository;
+    private final ArticleQueryRepository articleQueryRepository;
 
     private final ReplyRepository replyRepository;
 
@@ -52,16 +52,15 @@ public class DefaultArticleService implements ArticleService {
     public DefaultArticleService(
             @Value("${kr.me.seesaw.filepath}") String filepath,
             ArticleRepository articleRepository,
-            ArticleSearchRepository articleSearchRepository,
+            ArticleQueryRepository articleQueryRepository,
             ReplyRepository replyRepository,
             ViewRepository viewRepository,
             AttachmentRepository attachmentRepository,
-            EntityManager entityManager,
             PrincipalProvider principalProvider
     ) {
         this.filepath = filepath;
         this.articleRepository = articleRepository;
-        this.articleSearchRepository = articleSearchRepository;
+        this.articleQueryRepository = articleQueryRepository;
         this.replyRepository = replyRepository;
         this.viewRepository = viewRepository;
         this.attachmentRepository = attachmentRepository;
@@ -71,7 +70,15 @@ public class DefaultArticleService implements ArticleService {
     @Transactional(readOnly = true)
     @Override
     public Page<ArticleModel> findAll(Pageable pageable, ArticleSearch search) {
-        Page<Article> entityPage = articleSearchRepository.search(pageable, search);
+        String sort = null;
+        if (pageable.getSort().isSorted()) {
+            sort = pageable.getSort().toString().replace(":", "");
+        }
+
+        List<Article> articles = articleQueryRepository.search((int) pageable.getOffset(), pageable.getPageSize(), sort, search);
+        long count = articleQueryRepository.count(search);
+
+        Page<Article> entityPage = new org.springframework.data.domain.PageImpl<>(articles, pageable, count);
         Page<ArticleModel> page = entityPage.map(ArticleModel::new);
 
         // 페이지 요청이 아닐 경우 조인하지 않는다.
@@ -314,15 +321,13 @@ public class DefaultArticleService implements ArticleService {
     @Nullable
     @Override
     public ArticleModel getPreviousArticle(ArticleSearch search, LocalDateTime createdDate) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
-        return articleSearchRepository.findFirstNext(search, createdDate, sort).map(ArticleModel::new).orElse(null);
+        return articleQueryRepository.findFirstNext(search, createdDate, "DESC").map(ArticleModel::new).orElse(null);
     }
 
     @Nullable
     @Override
     public ArticleModel getNextArticle(ArticleSearch search, LocalDateTime createdDate) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "createdDate");
-        return articleSearchRepository.findFirstNext(search, createdDate, sort).map(ArticleModel::new).orElse(null);
+        return articleQueryRepository.findFirstNext(search, createdDate, "ASC").map(ArticleModel::new).orElse(null);
     }
 
     private void writeFile(String pathname, byte[] bytes) {
