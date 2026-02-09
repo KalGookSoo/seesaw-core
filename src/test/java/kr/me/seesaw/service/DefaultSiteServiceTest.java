@@ -3,7 +3,12 @@ package kr.me.seesaw.service;
 import kr.me.seesaw.command.CreateSiteCommand;
 import kr.me.seesaw.domain.vo.Address;
 import kr.me.seesaw.model.SiteModel;
-import kr.me.seesaw.repository.*;
+import kr.me.seesaw.repository.ArticleQueryRepository;
+import kr.me.seesaw.repository.AttachmentRepository;
+import kr.me.seesaw.repository.SiteRepository;
+import kr.me.seesaw.repository.UserRepository;
+import kr.me.seesaw.repository.impl.ArticleQueryRepositoryImpl;
+import kr.me.seesaw.repository.impl.SiteRepositoryImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
@@ -23,21 +29,17 @@ import java.nio.file.Path;
 @ActiveProfiles({"test"})
 @DataJpaTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@Import(SiteRepositoryImpl.class)
 class DefaultSiteServiceTest {
-
-    private SiteService siteService;
-
-    @TempDir
-    private Path tempDir;
 
     private final TestEntityManager entityManager;
 
     private final SiteRepository siteRepository;
 
-    public DefaultSiteServiceTest(TestEntityManager entityManager, SiteRepository siteRepository) {
-        this.entityManager = entityManager;
-        this.siteRepository = siteRepository;
-    }
+    private SiteService siteService;
+
+    @TempDir
+    private Path tempDir;
 
     @MockitoBean
     private AttachmentRepository attachmentRepository;
@@ -45,17 +47,21 @@ class DefaultSiteServiceTest {
     @MockitoBean
     private UserRepository userRepository;
 
+    public DefaultSiteServiceTest(TestEntityManager entityManager, SiteRepository siteRepository) {
+        this.entityManager = entityManager;
+        this.siteRepository = siteRepository;
+    }
+
     @BeforeEach
     void setUp() {
         String filepath = tempDir + "/";
-        ArticleSearchRepository articleSearchRepository = new ArticleSearchRepository(entityManager.getEntityManager());
+        ArticleQueryRepository articleQueryRepository = new ArticleQueryRepositoryImpl(entityManager.getEntityManager());
         siteService = new DefaultSiteService(
                 filepath,
                 siteRepository,
                 attachmentRepository,
-                articleSearchRepository,
-                userRepository,
-                categoryRepository
+                articleQueryRepository,
+                userRepository
         );
     }
 

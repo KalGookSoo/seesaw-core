@@ -10,6 +10,8 @@ import kr.me.seesaw.domain.vo.CategoryType;
 import kr.me.seesaw.model.CategoryModel;
 import kr.me.seesaw.repository.CategoryRepository;
 import kr.me.seesaw.repository.SiteRepository;
+import kr.me.seesaw.repository.impl.CategoryRepositoryImpl;
+import kr.me.seesaw.repository.impl.SiteRepositoryImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles({"test"})
 @DataJpaTest
-@Import(TestDataInitializerConfig.class)
+@Import({TestDataInitializerConfig.class, CategoryRepositoryImpl.class, SiteRepositoryImpl.class})
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class DefaultCategoryServiceTest {
 

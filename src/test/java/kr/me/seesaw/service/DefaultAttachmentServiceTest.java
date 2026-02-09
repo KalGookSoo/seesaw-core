@@ -4,6 +4,7 @@ import kr.me.seesaw.command.CreateAttachmentCommand;
 import kr.me.seesaw.domain.Attachment;
 import kr.me.seesaw.model.AttachmentModel;
 import kr.me.seesaw.repository.AttachmentRepository;
+import kr.me.seesaw.repository.impl.AttachmentRepositoryImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
@@ -24,21 +26,22 @@ import java.util.UUID;
 @ActiveProfiles({"test"})
 @DataJpaTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
+@Import(AttachmentRepositoryImpl.class)
 class DefaultAttachmentServiceTest {
-
-    private AttachmentService attachmentService;
 
     private final AttachmentRepository attachmentRepository;
 
     private final TestEntityManager entityManager;
 
+    private AttachmentService attachmentService;
+
+    @TempDir
+    private Path tempDir;
+
     public DefaultAttachmentServiceTest(AttachmentRepository attachmentRepository, TestEntityManager entityManager) {
         this.attachmentRepository = attachmentRepository;
         this.entityManager = entityManager;
     }
-
-    @TempDir
-    private Path tempDir;
 
     @BeforeEach
     void setUp() {
