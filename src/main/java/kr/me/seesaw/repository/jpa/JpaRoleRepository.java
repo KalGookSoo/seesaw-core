@@ -1,12 +1,13 @@
-package kr.me.seesaw.repository;
+package kr.me.seesaw.repository.jpa;
 
 import kr.me.seesaw.domain.Role;
+import org.springframework.data.repository.Repository;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public interface RoleRepository {
+public interface JpaRoleRepository extends Repository<Role, String> {
 
     Role save(Role role);
 

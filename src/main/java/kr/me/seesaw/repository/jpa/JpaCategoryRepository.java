@@ -1,12 +1,13 @@
-package kr.me.seesaw.repository;
+package kr.me.seesaw.repository.jpa;
 
 import kr.me.seesaw.domain.Category;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.Repository;
 
 import java.util.Collection;
 import java.util.Optional;
 
-public interface CategoryRepository {
+public interface JpaCategoryRepository extends Repository<Category, String> {
 
     Category save(Category category);
 

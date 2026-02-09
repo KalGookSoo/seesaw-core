@@ -1,11 +1,12 @@
-package kr.me.seesaw.repository;
+package kr.me.seesaw.repository.jpa;
 
 import kr.me.seesaw.domain.View;
+import org.springframework.data.repository.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface ViewRepository {
+public interface JpaViewRepository extends Repository<View, String> {
 
     View save(View view);
 

@@ -1,11 +1,12 @@
-package kr.me.seesaw.repository;
+package kr.me.seesaw.repository.jpa;
 
 import kr.me.seesaw.domain.Permission;
+import org.springframework.data.repository.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface PermissionRepository {
+public interface JpaPermissionRepository extends Repository<Permission, String> {
 
     Permission save(Permission permission);
 

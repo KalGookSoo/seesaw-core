@@ -1,11 +1,12 @@
-package kr.me.seesaw.repository;
+package kr.me.seesaw.repository.jpa;
 
 import kr.me.seesaw.domain.Site;
+import org.springframework.data.repository.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface SiteRepository {
+public interface JpaSiteRepository extends Repository<Site, String> {
 
     List<Site> findAll();
 

@@ -1,12 +1,13 @@
-package kr.me.seesaw.repository;
+package kr.me.seesaw.repository.jpa;
 
 import kr.me.seesaw.domain.Code;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface CodeRepository {
+public interface JpaCodeRepository extends Repository<Code, String> {
 
     Code save(Code code);
 

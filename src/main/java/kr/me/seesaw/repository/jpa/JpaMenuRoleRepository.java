@@ -1,12 +1,13 @@
-package kr.me.seesaw.repository;
+package kr.me.seesaw.repository.jpa;
 
 import kr.me.seesaw.domain.MenuRole;
+import org.springframework.data.repository.Repository;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public interface MenuRoleRepository {
+public interface JpaMenuRoleRepository extends Repository<MenuRole, String> {
 
     MenuRole save(MenuRole menuRole);
 

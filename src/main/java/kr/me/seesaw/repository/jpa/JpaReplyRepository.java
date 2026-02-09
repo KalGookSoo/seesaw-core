@@ -1,11 +1,12 @@
-package kr.me.seesaw.repository;
+package kr.me.seesaw.repository.jpa;
 
 import kr.me.seesaw.domain.Reply;
+import org.springframework.data.repository.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface ReplyRepository {
+public interface JpaReplyRepository extends Repository<Reply, String> {
 
     Reply save(Reply reply);
 
