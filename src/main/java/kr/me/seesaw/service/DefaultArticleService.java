@@ -1,6 +1,5 @@
 package kr.me.seesaw.service;
 
-import jakarta.persistence.EntityManager;
 import kr.me.seesaw.command.CreateArticleCommand;
 import kr.me.seesaw.command.UpdateArticleCommand;
 import kr.me.seesaw.core.authentication.PrincipalProvider;
@@ -48,8 +47,6 @@ public class DefaultArticleService implements ArticleService {
 
     private final AttachmentRepository attachmentRepository;
 
-    private final EntityManager entityManager;
-
     private final PrincipalProvider principalProvider;
 
     public DefaultArticleService(
@@ -68,7 +65,6 @@ public class DefaultArticleService implements ArticleService {
         this.replyRepository = replyRepository;
         this.viewRepository = viewRepository;
         this.attachmentRepository = attachmentRepository;
-        this.entityManager = entityManager;
         this.principalProvider = principalProvider;
     }
 
@@ -191,7 +187,7 @@ public class DefaultArticleService implements ArticleService {
 
         // 생성될 게시글의 식별자를 참조하기위해 먼저 게시글을 저장한다.
         Article article = Article.create(command);
-        articleRepository.save(article);
+        Article savedArticle = articleRepository.save(article);
 
         Document document = Jsoup.parse(command.getContent());
         Iterator<Element> iterator = document.select("img[src*=\"blob:\"]").iterator();
@@ -221,13 +217,12 @@ public class DefaultArticleService implements ArticleService {
         Safelist safelist = Safelist.relaxed().preserveRelativeLinks(true);
         article.setContent(Jsoup.clean(document.body().html(), "http://localhost", safelist));
         articleRepository.save(article);
-        return new ArticleModel(article);
+        return new ArticleModel(articleRepository.save(article));
     }
 
     @Override
     public ArticleModel update(String id, UpdateArticleCommand command) throws IOException {
-        Article article = Optional.ofNullable(entityManager.getReference(Article.class, id))
-                .orElseThrow(() -> new NoSuchElementException("해당 게시글이 존재하지 않습니다."));
+        Article article = articleRepository.getReferenceById(id);
 
         Document existingContent = Jsoup.parse(article.getContent());
         Elements existingImages = existingContent.select("img[src*=\"/api/attachments/\"]");
@@ -271,7 +266,6 @@ public class DefaultArticleService implements ArticleService {
         Safelist safelist = Safelist.relaxed().preserveRelativeLinks(true);
         command.setContent(Jsoup.clean(newContent.body().html(), "http://localhost", safelist));
         article.update(command);
-        articleRepository.save(article);
 
         // 첨부파일
         for (MultipartFile multipartFile : command.getMultipartFiles()) {
@@ -280,19 +274,22 @@ public class DefaultArticleService implements ArticleService {
             attachmentRepository.save(attachment);
         }
         return new ArticleModel(article);
+
+        return new ArticleModel(articleRepository.save(article));
     }
 
     @Override
     public void delete(String id) {
-        Article article = Optional.ofNullable(entityManager.getReference(Article.class, id))
-                .orElseThrow(() -> new NoSuchElementException("해당 게시글이 존재하지 않습니다."));
+        Article article = articleRepository.getReferenceById(id);
         List<Reply> replies = replyRepository.findAllByArticleIdIn(Collections.singletonList(article.getId()));
         replyRepository.deleteAllInBatch(replies);
         List<View> views = viewRepository.findAllByArticleIdIn(Collections.singletonList(article.getId()));
         viewRepository.deleteAllInBatch(views);
         List<Attachment> attachments = attachmentRepository.findAllByReferenceIdIn(Collections.singletonList(article.getId()));
         attachmentRepository.deleteAllInBatch(attachments);
-        attachments.stream().map(attachment -> filepath + attachment.getPathName() + File.separator + attachment.getName()).forEach(FileIOService::delete);
+        attachments.stream()
+                .map(attachment -> filepath + attachment.getPathName() + File.separator + attachment.getName())
+                .forEach(FileIOService::delete);
 
         articleRepository.delete(article);
     }
