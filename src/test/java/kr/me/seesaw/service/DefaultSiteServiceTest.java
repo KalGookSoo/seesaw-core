@@ -43,9 +43,6 @@ class DefaultSiteServiceTest {
     private AttachmentRepository attachmentRepository;
 
     @MockitoBean
-    private CategoryRepository categoryRepository;
-
-    @MockitoBean
     private UserRepository userRepository;
 
     @BeforeEach

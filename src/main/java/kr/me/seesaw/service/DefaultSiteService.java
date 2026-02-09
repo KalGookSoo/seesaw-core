@@ -4,7 +4,10 @@ import kr.me.seesaw.command.CreateSiteCommand;
 import kr.me.seesaw.core.file.FileIOService;
 import kr.me.seesaw.domain.*;
 import kr.me.seesaw.model.*;
-import kr.me.seesaw.repository.*;
+import kr.me.seesaw.repository.ArticleQueryRepository;
+import kr.me.seesaw.repository.AttachmentRepository;
+import kr.me.seesaw.repository.SiteRepository;
+import kr.me.seesaw.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +33,6 @@ public class DefaultSiteService implements SiteService {
 
     private final UserRepository userRepository;
 
-    private final CategoryRepository categoryRepository;
-
     public DefaultSiteService(
             @Value("${kr.me.seesaw.filepath}") String filepath,
             SiteRepository siteRepository,
@@ -45,7 +46,6 @@ public class DefaultSiteService implements SiteService {
         this.attachmentRepository = attachmentRepository;
         this.articleSearchRepository = articleSearchRepository;
         this.userRepository = userRepository;
-        this.categoryRepository = categoryRepository;
     }
 
     @Transactional(readOnly = true)
