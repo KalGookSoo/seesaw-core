@@ -30,4 +30,11 @@ public class Vote extends BaseEntity {
     @Comment("찬성여부")
     private boolean approved;
 
+    public static Vote create(String referenceId, boolean approved) {
+        Vote vote = new Vote();
+        vote.referenceId = referenceId;
+        vote.approved = approved;
+        return vote;
+    }
+
 }
