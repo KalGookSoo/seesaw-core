@@ -56,6 +56,10 @@ public class Category extends AbstractHierarchical<Category> {
     @Comment("순서")
     private Integer sequence;
 
+    @Column(name = "site_id", insertable = false, updatable = false)
+    @Comment("사이트 식별자 (읽기전용)")
+    private String siteId;
+
     @Comment("사이트 식별자")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "site_id", referencedColumnName = "id")

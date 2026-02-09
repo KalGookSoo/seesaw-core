@@ -25,10 +25,18 @@ import static lombok.AccessLevel.PROTECTED;
 @DynamicUpdate
 public class MenuRole extends BaseEntity {
 
+    @Column(name = "menu_id", insertable = false, updatable = false)
+    @Comment("메뉴 식별자 (읽기전용)")
+    private String menuId;
+
     @Comment("메뉴")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "menu_id", referencedColumnName = "id")
     private Menu menu;
+
+    @Column(name = "role_id", insertable = false, updatable = false)
+    @Comment("역할 식별자 (읽기전용)")
+    private String roleId;
 
     @Comment("역할")
     @ManyToOne(fetch = FetchType.LAZY)

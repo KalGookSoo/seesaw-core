@@ -13,6 +13,10 @@ import java.util.List;
 @Setter(AccessLevel.PROTECTED)
 @Getter
 abstract public class AbstractHierarchical<T> extends BaseEntity {
+    
+    @Column(name = "parent_id", insertable = false, updatable = false)
+    @Comment("부모 식별자 (읽기전용)")
+    protected String parentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", referencedColumnName = "id")

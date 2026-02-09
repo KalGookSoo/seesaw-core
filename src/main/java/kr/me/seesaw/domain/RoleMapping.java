@@ -24,15 +24,27 @@ import static lombok.AccessLevel.PROTECTED;
 @DynamicUpdate
 public class RoleMapping extends BaseEntity {
 
+    @Column(name = "user_id", insertable = false, updatable = false)
+    @Comment("계정 식별자 (읽기전용)")
+    private String userId;
+
     @Comment("계정 식별자")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    @Column(name = "site_id", insertable = false, updatable = false)
+    @Comment("사이트 식별자 (읽기전용)")
+    private String siteId;
+
     @Comment("사이트 식별자")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "site_id", referencedColumnName = "id")
     private Site site;
+
+    @Column(name = "role_id", insertable = false, updatable = false)
+    @Comment("역할 식별자 (읽기전용)")
+    private String roleId;
 
     @Comment("역할 식별자")
     @ManyToOne(fetch = FetchType.LAZY)

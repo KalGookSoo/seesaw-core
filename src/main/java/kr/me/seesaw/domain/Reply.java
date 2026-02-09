@@ -34,6 +34,10 @@ public class Reply extends AbstractHierarchical<Reply> {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "article_id", insertable = false, updatable = false)
+    @Comment("게시글 식별자 (읽기전용)")
+    private String articleId;
+
     @Comment("게시글")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id", referencedColumnName = "id")

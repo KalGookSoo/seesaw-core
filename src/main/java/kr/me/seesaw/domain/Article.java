@@ -19,7 +19,6 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @EqualsAndHashCode(exclude = {"category", "replies", "views"}, callSuper = true)
 @ToString(exclude = {"category", "replies", "views"})
-
 @Entity
 @Table(name = "tb_article", indexes = {
         @Index(columnList = "category_id"),
@@ -50,6 +49,10 @@ public class Article extends AbstractHierarchical<Article> {
     @Enumerated(EnumType.STRING)
     @Comment("타입")
     private ArticleType type;
+
+    @Column(name = "category_id", insertable = false, updatable = false)
+    @Comment("카테고리 식별자 (읽기전용)")
+    private String categoryId;
 
     @Comment("카테고리 식별자")
     @ManyToOne(fetch = FetchType.LAZY)
