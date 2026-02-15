@@ -14,8 +14,8 @@ import java.util.UUID;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
-@Setter(AccessLevel.PROTECTED)
-@NoArgsConstructor(access = PROTECTED)
+@Setter
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString()
 
@@ -44,20 +44,6 @@ public class Attachment extends BaseEntity {
 
     @Comment("크기")
     private long size;
-
-    /**
-     * 게시글에 첨부된 파일
-     */
-    public static Attachment create(String referenceId, Type type, MultipartFile multipartFile) {
-        Attachment attachment = new Attachment();
-        attachment.referenceId = referenceId;
-        attachment.originalName = multipartFile.getOriginalFilename();
-        attachment.name = generateName(attachment.originalName);
-        attachment.pathName = type.getPath();
-        attachment.mimeType = multipartFile.getContentType();
-        attachment.size = multipartFile.getSize();
-        return attachment;
-    }
 
     private static String generateName(String originName) {
         return String.format("%s_%s", UUID.randomUUID(), originName);

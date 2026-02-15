@@ -10,11 +10,9 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static lombok.AccessLevel.PROTECTED;
-
 @Getter
-@Setter(AccessLevel.PROTECTED)
-@NoArgsConstructor(access = PROTECTED)
+@Setter
+@NoArgsConstructor
 @EqualsAndHashCode(exclude = {"roleMappings", "menuRoles"}, callSuper = true)
 @ToString(exclude = {"roleMappings", "menuRoles"})
 
@@ -38,13 +36,6 @@ public class Role extends BaseEntity {
 
     @OneToMany(mappedBy = "role", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<MenuRole> menuRoles = new ArrayList<>();
-
-    public static Role create(String name, String alias) {
-        Role role = new Role();
-        role.name = name;
-        role.alias = alias;
-        return role;
-    }
 
     public boolean has(RoleName roleName) {
         return roleName.name().equals(name);

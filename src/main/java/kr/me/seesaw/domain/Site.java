@@ -5,6 +5,7 @@ import kr.me.seesaw.domain.vo.Address;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicInsert;
@@ -16,7 +17,8 @@ import java.util.List;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
-@NoArgsConstructor(access = PROTECTED)
+@Setter
+@NoArgsConstructor
 @EqualsAndHashCode(exclude = {"roleMappings", "categories"}, callSuper = true)
 @ToString(exclude = {"roleMappings", "categories"})
 
@@ -56,7 +58,6 @@ public class Site extends AbstractHierarchical<Site> {
             @AttributeOverride(name = "zipcode", column = @Column(name = "zipcode")),
             @AttributeOverride(name = "value", column = @Column(name = "address"))
     })
-    @Comment("주소")
     private Address address;
 
     @Comment("연락처")
@@ -74,60 +75,6 @@ public class Site extends AbstractHierarchical<Site> {
 
     @OneToMany(mappedBy = "site", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Category> categories = new ArrayList<>();
-
-    public static Site create(
-            String name,
-            String domainName,
-            String description,
-            String distributionCode,
-            boolean searchEngineExposed,
-            boolean mageExposed,
-            String tags,
-            Address address,
-            String contactNumber,
-            String intro,
-            String content
-    ) {
-        Site site = new Site();
-        site.name = name;
-        site.domainName = domainName;
-        site.description = description;
-        site.distributionCode = distributionCode;
-        site.searchEngineExposed = searchEngineExposed;
-        site.imageExposed = mageExposed;
-        site.tags = tags;
-        site.address = address;
-        site.contactNumber = contactNumber;
-        site.intro = intro;
-        site.content = content;
-        return site;
-    }
-
-    public void update(
-            String name,
-            String domainName,
-            String description,
-            String distributionCode,
-            boolean searchEngineExposed,
-            boolean imageExposed,
-            String tags,
-            Address address,
-            String contactNumber,
-            String intro,
-            String content
-    ) {
-        this.name = name;
-        this.domainName = domainName;
-        this.description = description;
-        this.distributionCode = distributionCode;
-        this.searchEngineExposed = searchEngineExposed;
-        this.imageExposed = imageExposed;
-        this.tags = tags;
-        this.address = address;
-        this.contactNumber = contactNumber;
-        this.intro = intro;
-        this.content = content;
-    }
 
     public Address getAddress() {
         return address == null ? Address.empty() : address;

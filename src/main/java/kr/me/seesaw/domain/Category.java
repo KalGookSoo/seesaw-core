@@ -1,15 +1,8 @@
 package kr.me.seesaw.domain;
 
 import jakarta.persistence.*;
-import jakarta.persistence.Index;
-import kr.me.seesaw.command.CreateCategoryCommand;
-import kr.me.seesaw.command.MoveCategoryCommand;
-import kr.me.seesaw.command.UpdateCategoryCommand;
 import kr.me.seesaw.domain.vo.CategoryType;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -17,10 +10,9 @@ import org.hibernate.annotations.DynamicUpdate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static lombok.AccessLevel.PROTECTED;
-
 @Getter
-@NoArgsConstructor(access = PROTECTED)
+@Setter
+@NoArgsConstructor
 @EqualsAndHashCode(exclude = {"site", "articles"}, callSuper = true)
 @ToString(exclude = {"site", "articles"})
 
@@ -57,69 +49,14 @@ public class Category extends AbstractHierarchical<Category> {
     private Integer sequence;
 
     @Column(name = "site_id", insertable = false, updatable = false)
-    @Comment("사이트 식별자 (읽기전용)")
     private String siteId;
 
-    @Comment("사이트 식별자")
+    @Comment("사이트")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "site_id", referencedColumnName = "id")
     private Site site;
 
     @OneToMany(mappedBy = "category", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Article> articles = new ArrayList<>();
-
-    public static Category create(CreateCategoryCommand command) {
-        Category category = new Category();
-        category.name = command.getName();
-        category.description = command.getDescription();
-        category.type = command.getType();
-        category.siteExposed = command.isSiteExposed();
-        category.siteExposedOrder = command.getSiteExposedOrder();
-        category.exposed = command.isExposed();
-        category.sequence = command.getSequence();
-
-        Site site = new Site();
-        site.setId(command.getSiteId());
-        category.site = site;
-
-        if (command.getParentId() != null) {
-            Category parent = new Category();
-            parent.setId(command.getParentId());
-            category.parent = parent;
-        }
-
-        return category;
-    }
-
-    public void update(UpdateCategoryCommand command) {
-        this.name = command.getName();
-        this.description = command.getDescription();
-        this.type = command.getType();
-        this.siteExposed = command.isSiteExposed();
-        this.siteExposedOrder = command.getSiteExposedOrder();
-        this.exposed = command.isExposed();
-        this.sequence = command.getSequence();
-
-        this.getSite().setId(command.getSiteId());
-
-        if (command.getParentId() != null) {
-            Category parent = new Category();
-            parent.setId(command.getParentId());
-            this.parent = parent;
-        } else {
-            this.parent = null;
-        }
-    }
-
-    public void move(MoveCategoryCommand command) {
-        this.sequence = command.getSequence();
-        if (command.getParentId() != null) {
-            Category parent = new Category();
-            parent.setId(command.getParentId());
-            this.parent = parent;
-        } else {
-            this.parent = null;
-        }
-    }
 
 }

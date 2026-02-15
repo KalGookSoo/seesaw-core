@@ -6,6 +6,7 @@ import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicInsert;
@@ -14,7 +15,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
-@NoArgsConstructor(access = PROTECTED)
+@Setter
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString
 
@@ -43,21 +45,5 @@ public class Permission extends BaseEntity {
      */
     @Comment("비트마스크")
     private int mask;
-
-    public Permission(String targetId, String roleId, int mask) {
-        this.targetId = targetId;
-        this.roleId = roleId;
-        this.mask = mask;
-    }
-
-    public static Permission create(String targetId, String roleId, int mask) {
-        return new Permission(targetId, roleId, mask);
-    }
-
-    public void update(String targetId, String roleId, int mask) {
-        this.targetId = targetId;
-        this.roleId = roleId;
-        this.mask = mask;
-    }
 
 }

@@ -9,8 +9,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
-@Setter(AccessLevel.PROTECTED)
-@NoArgsConstructor(access = PROTECTED)
+@Setter
+@NoArgsConstructor
 @EqualsAndHashCode(exclude = {"role", "user", "site"}, callSuper = true)
 @ToString(exclude = {"role", "user", "site"})
 
@@ -25,7 +25,6 @@ import static lombok.AccessLevel.PROTECTED;
 public class RoleMapping extends BaseEntity {
 
     @Column(name = "user_id", insertable = false, updatable = false)
-    @Comment("계정 식별자 (읽기전용)")
     private String userId;
 
     @Comment("계정 식별자")
@@ -34,7 +33,6 @@ public class RoleMapping extends BaseEntity {
     private User user;
 
     @Column(name = "site_id", insertable = false, updatable = false)
-    @Comment("사이트 식별자 (읽기전용)")
     private String siteId;
 
     @Comment("사이트 식별자")
@@ -43,20 +41,11 @@ public class RoleMapping extends BaseEntity {
     private Site site;
 
     @Column(name = "role_id", insertable = false, updatable = false)
-    @Comment("역할 식별자 (읽기전용)")
     private String roleId;
 
     @Comment("역할 식별자")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Role role;
-
-    public static RoleMapping create(Role role, User user, Site site) {
-        RoleMapping roleMapping = new RoleMapping();
-        roleMapping.role = role;
-        roleMapping.user = user;
-        roleMapping.site = site;
-        return roleMapping;
-    }
 
 }

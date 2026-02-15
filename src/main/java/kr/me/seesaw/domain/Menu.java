@@ -5,6 +5,7 @@ import jakarta.persistence.Index;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicInsert;
@@ -16,7 +17,8 @@ import java.util.List;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
-@NoArgsConstructor(access = PROTECTED)
+@Setter
+@NoArgsConstructor
 @EqualsAndHashCode(exclude = {"menuRoles"}, callSuper = true)
 @ToString(exclude = {"menuRoles"})
 
@@ -40,17 +42,5 @@ public class Menu extends AbstractHierarchical<Menu> {
 
     @OneToMany(mappedBy = "menu", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<MenuRole> menuRoles = new ArrayList<>();
-
-    public Menu(String name, String uri, Integer sequence) {
-        this.name = name;
-        this.uri = uri;
-        this.sequence = sequence;
-    }
-
-    public void update(String name, String uri, Integer sequence) {
-        this.name = name;
-        this.uri = uri;
-        this.sequence = sequence;
-    }
 
 }

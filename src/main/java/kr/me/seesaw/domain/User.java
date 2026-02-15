@@ -18,8 +18,8 @@ import java.util.List;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
-@Setter(AccessLevel.PROTECTED)
-@NoArgsConstructor(access = PROTECTED)
+@Setter
+@NoArgsConstructor
 @EqualsAndHashCode(exclude = {"roleMappings"}, callSuper = true)
 @ToString(exclude = {"roleMappings"})
 
@@ -46,7 +46,6 @@ public class User extends BaseEntity {
             @AttributeOverride(name = "id", column = @Column(name = "email_id")),
             @AttributeOverride(name = "domain", column = @Column(name = "email_domain"))
     })
-    @Comment("이메일")
     private Email email;
 
     @Comment("연락처")
@@ -64,25 +63,6 @@ public class User extends BaseEntity {
     @Comment("패스워드 만료 일시")
     private LocalDateTime credentialsExpiredDate;
 
-    public static User create(String username, String password, String name, Email email, String contactNumber) {
-        User user = new User();
-        user.username = username;
-        user.password = password;
-        user.name = name;
-        user.email = email;
-        user.contactNumber = contactNumber;
-        user.initializeAccountPolicy();
-        return user;
-    }
-
-    public static User create(String username, Email email) {
-        User user = new User();
-        user.username = username;
-        user.email = email;
-        user.initializeAccountPolicy();
-        return user;
-    }
-
     /**
      * 패스워드를 변경합니다.
      *
@@ -98,7 +78,7 @@ public class User extends BaseEntity {
      * 만료 일시는 금일(00:00)로부터 2년 후 까지로 설정합니다.
      * 패스워드 만료 일시는 생성일(00:00)로부터 180일 후 까지로 설정합니다.
      */
-    private void initializeAccountPolicy() {
+    public void initializeAccountPolicy() {
         expiredDate = LocalDate.now().atTime(LocalTime.MIDNIGHT).plusYears(2L);
         credentialsExpiredDate = LocalDate.now().atTime(LocalTime.MIDNIGHT).plusDays(180L);
     }

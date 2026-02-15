@@ -9,8 +9,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
-@Setter(AccessLevel.PROTECTED)
-@NoArgsConstructor(access = PROTECTED)
+@Setter
+@NoArgsConstructor
 @EqualsAndHashCode(exclude = {"article"}, callSuper = true)
 @ToString(exclude = {"article"})
 
@@ -24,20 +24,11 @@ import static lombok.AccessLevel.PROTECTED;
 public class View extends BaseEntity {
 
     @Column(name = "article_id", insertable = false, updatable = false)
-    @Comment("게시글 식별자 (읽기전용)")
     private String articleId;
 
     @Comment("게시글 식별자")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id", referencedColumnName = "id")
     private Article article;
-
-    public static View create(String articleId) {
-        View view = new View();
-        Article article = new Article();
-        article.setId(articleId);
-        view.article = article;
-        return view;
-    }
 
 }

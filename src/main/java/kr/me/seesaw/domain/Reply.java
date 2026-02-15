@@ -12,8 +12,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
-@Setter(AccessLevel.PROTECTED)
-@NoArgsConstructor(access = PROTECTED)
+@Setter
+@NoArgsConstructor
 @EqualsAndHashCode(exclude = {"article"}, callSuper = true)
 @ToString(exclude = {"article"})
 
@@ -35,7 +35,6 @@ public class Reply extends AbstractHierarchical<Reply> {
     private String content;
 
     @Column(name = "article_id", insertable = false, updatable = false)
-    @Comment("게시글 식별자 (읽기전용)")
     private String articleId;
 
     @Comment("게시글")
@@ -43,20 +42,5 @@ public class Reply extends AbstractHierarchical<Reply> {
     @JoinColumn(name = "article_id", referencedColumnName = "id")
     @JsonBackReference
     private Article article;
-
-    public static Reply create(CreateReplyCommand command) {
-        Reply reply = new Reply();
-        Article article = new Article();
-        article.setId(command.getArticleId());
-        reply.article = article;
-        reply.content = command.getContent();
-        reply.exposed = command.isExposed();
-        return reply;
-    }
-
-    public void update(UpdateReplyCommand command) {
-        this.content = command.getContent();
-        this.exposed = command.isExposed();
-    }
 
 }

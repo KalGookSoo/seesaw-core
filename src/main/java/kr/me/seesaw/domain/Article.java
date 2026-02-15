@@ -15,8 +15,8 @@ import java.util.List;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
-@Setter(AccessLevel.PROTECTED)
-@NoArgsConstructor(access = PROTECTED)
+@Setter
+@NoArgsConstructor
 @EqualsAndHashCode(exclude = {"category", "replies", "views"}, callSuper = true)
 @ToString(exclude = {"category", "replies", "views"})
 @Entity
@@ -43,7 +43,6 @@ public class Article extends AbstractHierarchical<Article> {
 
     @Comment("본문")
     @Column(columnDefinition = "TEXT")
-    @Setter(AccessLevel.PUBLIC)
     private String content;
 
     @Enumerated(EnumType.STRING)
@@ -51,10 +50,9 @@ public class Article extends AbstractHierarchical<Article> {
     private ArticleType type;
 
     @Column(name = "category_id", insertable = false, updatable = false)
-    @Comment("카테고리 식별자 (읽기전용)")
     private String categoryId;
 
-    @Comment("카테고리 식별자")
+    @Comment("카테고리")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
@@ -64,27 +62,5 @@ public class Article extends AbstractHierarchical<Article> {
 
     @OneToMany(mappedBy = "article", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<View> views = new ArrayList<>();
-
-    public static Article create(CreateArticleCommand command) {
-        Article article = new Article();
-        Category category = new Category();
-        category.setId(command.getCategoryId());
-        article.category = category;
-        article.type = command.getType();
-        article.fixed = command.isFixed();
-        article.fixedOrder = command.getFixedOrder();
-        article.title = command.getTitle();
-        article.content = command.getContent();
-        return article;
-    }
-
-    public void update(UpdateArticleCommand command) {
-        getCategory().setId(command.getCategoryId());
-        this.type = command.getType();
-        this.fixed = command.isFixed();
-        this.fixedOrder = command.getFixedOrder();
-        this.title = command.getTitle();
-        this.content = command.getContent();
-    }
 
 }

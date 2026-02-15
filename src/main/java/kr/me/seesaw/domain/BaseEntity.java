@@ -23,7 +23,7 @@ import java.util.Objects;
 @MappedSuperclass
 @EntityListeners({AuditingEntityListener.class, IpAddressAuditingEntityListener.class})
 @Getter
-@Setter(AccessLevel.PROTECTED)
+@Setter
 @ToString
 abstract public class BaseEntity implements Serializable {
 

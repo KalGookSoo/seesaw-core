@@ -6,6 +6,7 @@ import jakarta.persistence.Index;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicInsert;
@@ -14,7 +15,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
-@NoArgsConstructor(access = PROTECTED)
+@Setter
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @ToString()
 
@@ -35,18 +37,5 @@ public class Code extends AbstractHierarchical<Code> {
 
     @Comment("순서")
     private Integer sequence;
-
-    public static Code create(String name, String description, Integer sequence, String parentId) {
-        Code code = new Code();
-        code.name = name;
-        code.description = description;
-        code.sequence = sequence;
-        if (parentId != null) {
-            Code parent = new Code();
-            parent.setId(parentId);
-            code.setParent(parent);
-        }
-        return code;
-    }
 
 }

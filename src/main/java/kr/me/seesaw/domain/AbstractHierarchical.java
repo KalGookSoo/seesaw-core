@@ -10,17 +10,15 @@ import java.util.List;
 @MappedSuperclass
 @ToString(exclude = {"parent", "children"})
 @EqualsAndHashCode(exclude = {"parent", "children"}, callSuper = true)
-@Setter(AccessLevel.PROTECTED)
+@Setter
 @Getter
 abstract public class AbstractHierarchical<T> extends BaseEntity {
     
     @Column(name = "parent_id", insertable = false, updatable = false)
-    @Comment("부모 식별자 (읽기전용)")
     protected String parentId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", referencedColumnName = "id")
-    @Comment("부모 식별자")
     protected T parent;
 
     @OneToMany(mappedBy = "parent", cascade = {CascadeType.PERSIST, CascadeType.MERGE})

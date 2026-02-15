@@ -10,8 +10,8 @@ import org.hibernate.annotations.DynamicUpdate;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
-@Setter(AccessLevel.PROTECTED)
-@NoArgsConstructor(access = PROTECTED)
+@Setter
+@NoArgsConstructor
 @EqualsAndHashCode(exclude = {"menu", "role"}, callSuper = true)
 @ToString(exclude = {"menu", "role"})
 
@@ -26,7 +26,6 @@ import static lombok.AccessLevel.PROTECTED;
 public class MenuRole extends BaseEntity {
 
     @Column(name = "menu_id", insertable = false, updatable = false)
-    @Comment("메뉴 식별자 (읽기전용)")
     private String menuId;
 
     @Comment("메뉴")
@@ -35,23 +34,11 @@ public class MenuRole extends BaseEntity {
     private Menu menu;
 
     @Column(name = "role_id", insertable = false, updatable = false)
-    @Comment("역할 식별자 (읽기전용)")
     private String roleId;
 
     @Comment("역할")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Role role;
-
-    public static MenuRole create(String menuId, String roleId) {
-        MenuRole menuRole = new MenuRole();
-        Menu menu = new Menu();
-        menu.setId(menuId);
-        menuRole.menu = menu;
-        Role role = new Role();
-        role.setId(roleId);
-        menuRole.role = role;
-        return menuRole;
-    }
 
 }
