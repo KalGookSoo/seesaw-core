@@ -47,7 +47,6 @@ public class VTodo extends CalendarComponent {
     private TodoStatus status;
 
     @Embedded
-    @Comment("반복 규칙")
     private RecurrenceRule rrule;
 
 }

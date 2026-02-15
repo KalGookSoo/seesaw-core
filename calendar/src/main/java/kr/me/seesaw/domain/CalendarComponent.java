@@ -24,17 +24,14 @@ public abstract class CalendarComponent extends BaseEntity {
     @Comment("변경 횟수 순서")
     private Integer sequence = 0;
 
-    @Comment("UID (RFC 5545)")
     public String getUid() {
         return getId();
     }
 
-    @Comment("최초 생성 시점")
     public Instant getCreated() {
         return getCreatedDate() != null ? getCreatedDate().toInstant(ZoneOffset.UTC) : null;
     }
 
-    @Comment("최종 수정 시점")
     public Instant getLastModified() {
         return getLastModifiedDate() != null ? getLastModifiedDate().toInstant(ZoneOffset.UTC) : null;
     }

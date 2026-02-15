@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter(AccessLevel.PUBLIC)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
+@NoArgsConstructor
 @EqualsAndHashCode(exclude = {"attendees", "article"}, callSuper = true)
 @ToString(exclude = {"attendees", "article"}, callSuper = true)
 @Entity
@@ -27,13 +27,11 @@ import java.util.List;
 public class VEvent extends CalendarComponent {
 
     @Column(name = "id", insertable = false, updatable = false)
-    @Comment("게시글 식별자 (읽기전용)")
     private String articleId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "id")
-    @Comment("게시글")
     private Article article;
 
     @Column(nullable = false)
@@ -59,7 +57,6 @@ public class VEvent extends CalendarComponent {
     private EventStatus status;
 
     @Embedded
-    @Comment("반복 규칙")
     private RecurrenceRule rrule;
 
     @Comment("시간대 식별자")
