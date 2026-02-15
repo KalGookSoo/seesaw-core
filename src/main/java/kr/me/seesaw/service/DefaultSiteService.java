@@ -143,19 +143,19 @@ public class DefaultSiteService implements SiteService {
 
     @Override
     public SiteModel createSite(CreateSiteCommand command) throws IOException {
-        Site site = Site.create(
-                command.getName(),
-                command.getDomainName(),
-                command.getDescription(),
-                command.getDistributionCode(),
-                command.isSearchEngineExposed(),
-                command.isImageExposed(),
-                command.getTags(),
-                command.getAddress(),
-                command.getContactNumber(),
-                command.getIntro(),
-                command.getContent()
-        );
+        Site site = new Site();
+        site.setName(command.getName());
+        site.setDomainName(command.getDomainName());
+        site.setDescription(command.getDescription());
+        site.setDistributionCode(command.getDistributionCode());
+        site.setSearchEngineExposed(command.isSearchEngineExposed());
+        site.setImageExposed(command.isImageExposed());
+        site.setTags(command.getTags());
+        site.setAddress(command.getAddress());
+        site.setContactNumber(command.getContactNumber());
+        site.setIntro(command.getIntro());
+        site.setContent(command.getContent());
+
         siteRepository.save(site);
 
         SiteModel siteModel = new SiteModel(site);
@@ -163,7 +163,14 @@ public class DefaultSiteService implements SiteService {
         // 프로필 이미지
         if (command.hasProfileImage()) {
             // 쓰기
-            Attachment attachment = Attachment.create(site.getId(), Attachment.Type.INLINE_IMAGE, command.getProfileImage());
+            Attachment attachment = new Attachment();
+            attachment.setReferenceId(site.getId());
+            attachment.setOriginalName(command.getProfileImage().getOriginalFilename());
+            attachment.setName(UUID.randomUUID() + "_" + attachment.getOriginalName());
+            attachment.setPathName(Attachment.Type.INLINE_IMAGE.getPath());
+            attachment.setMimeType(command.getProfileImage().getContentType());
+            attachment.setSize(command.getProfileImage().getSize());
+
             writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), command.getProfileImage().getBytes());
 
             // 영속화
@@ -174,7 +181,14 @@ public class DefaultSiteService implements SiteService {
         // 배경 이미지
         if (command.hasBackgroundImage()) {
             // 쓰기
-            Attachment attachment = Attachment.create(site.getId(), Attachment.Type.BACKGROUND_IMAGE, command.getProfileImage());
+            Attachment attachment = new Attachment();
+            attachment.setReferenceId(site.getId());
+            attachment.setOriginalName(command.getBackgroundImage().getOriginalFilename());
+            attachment.setName(UUID.randomUUID() + "_" + attachment.getOriginalName());
+            attachment.setPathName(Attachment.Type.BACKGROUND_IMAGE.getPath());
+            attachment.setMimeType(command.getBackgroundImage().getContentType());
+            attachment.setSize(command.getBackgroundImage().getSize());
+
             writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), command.getBackgroundImage().getBytes());
 
             // 영속화
@@ -187,19 +201,18 @@ public class DefaultSiteService implements SiteService {
     @Override
     public SiteModel updateSite(String id, CreateSiteCommand command) throws IOException {
         Site site = siteRepository.getReferenceById(id);
-        site.update(
-                command.getName(),
-                command.getDomainName(),
-                command.getDescription(),
-                command.getDistributionCode(),
-                command.isSearchEngineExposed(),
-                command.isImageExposed(),
-                command.getTags(),
-                command.getAddress(),
-                command.getContactNumber(),
-                command.getIntro(),
-                command.getContent()
-        );
+        site.setName(command.getName());
+        site.setDomainName(command.getDomainName());
+        site.setDescription(command.getDescription());
+        site.setDistributionCode(command.getDistributionCode());
+        site.setSearchEngineExposed(command.isSearchEngineExposed());
+        site.setImageExposed(command.isImageExposed());
+        site.setTags(command.getTags());
+        site.setAddress(command.getAddress());
+        site.setContactNumber(command.getContactNumber());
+        site.setIntro(command.getIntro());
+        site.setContent(command.getContent());
+
         siteRepository.save(site);
         SiteModel siteModel = new SiteModel(site);
 
@@ -214,7 +227,14 @@ public class DefaultSiteService implements SiteService {
             attachments.stream().map(attachment -> filepath + attachment.getPathName() + File.separator + attachment.getName()).forEach(FileIOService::delete);
 
             // 쓰기
-            Attachment attachment = Attachment.create(site.getId(), Attachment.Type.INLINE_IMAGE, command.getProfileImage());
+            Attachment attachment = new Attachment();
+            attachment.setReferenceId(site.getId());
+            attachment.setOriginalName(command.getProfileImage().getOriginalFilename());
+            attachment.setName(UUID.randomUUID() + "_" + attachment.getOriginalName());
+            attachment.setPathName(Attachment.Type.INLINE_IMAGE.getPath());
+            attachment.setMimeType(command.getProfileImage().getContentType());
+            attachment.setSize(command.getProfileImage().getSize());
+
             writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), command.getProfileImage().getBytes());
 
             // 영속화
@@ -230,7 +250,14 @@ public class DefaultSiteService implements SiteService {
             attachments.stream().map(attachment -> filepath + attachment.getPathName() + File.separator + attachment.getName()).forEach(FileIOService::delete);
 
             // 쓰기
-            Attachment attachment = Attachment.create(site.getId(), Attachment.Type.BACKGROUND_IMAGE, command.getProfileImage());
+            Attachment attachment = new Attachment();
+            attachment.setReferenceId(site.getId());
+            attachment.setOriginalName(command.getBackgroundImage().getOriginalFilename());
+            attachment.setName(UUID.randomUUID() + "_" + attachment.getOriginalName());
+            attachment.setPathName(Attachment.Type.BACKGROUND_IMAGE.getPath());
+            attachment.setMimeType(command.getBackgroundImage().getContentType());
+            attachment.setSize(command.getBackgroundImage().getSize());
+
             writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), command.getBackgroundImage().getBytes());
 
             // 영속화

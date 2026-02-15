@@ -39,7 +39,17 @@ public class DefaultAttachmentService implements AttachmentService {
      */
     @Override
     public AttachmentModel createAttachment(CreateAttachmentCommand command) throws IllegalArgumentException {
-        Attachment attachment = Attachment.create(command.getReferenceId(), command.getType(), command.getMultipartFile());
+        if (command.getMultipartFile() == null || command.getMultipartFile().isEmpty()) {
+            throw new IllegalArgumentException("첨부파일이 존재하지 않습니다.");
+        }
+        Attachment attachment = new Attachment();
+        attachment.setReferenceId(command.getReferenceId());
+        attachment.setPathName(command.getType().getPath());
+        attachment.setMimeType(command.getMultipartFile().getContentType());
+        attachment.setSize(command.getMultipartFile().getSize());
+        attachment.setOriginalName(command.getMultipartFile().getOriginalFilename());
+        attachment.setName(java.util.UUID.randomUUID() + "_" + attachment.getOriginalName());
+
         byte[] bytes;
         try {
             bytes = command.getMultipartFile().getBytes();

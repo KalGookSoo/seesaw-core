@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 
-@Schema(description = "사이트 생성 커맨드")
+@Schema(description = "첨부파일 생성 커맨드")
 @ToString
 @AllArgsConstructor
 @EqualsAndHashCode

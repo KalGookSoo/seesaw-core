@@ -193,14 +193,30 @@ public class DefaultArticleService implements ArticleService {
     public ArticleModel create(CreateArticleCommand command) throws IOException {
 
         // 생성될 게시글의 식별자를 참조하기위해 먼저 게시글을 저장한다.
-        Article article = Article.create(command);
+        Article article = new Article();
+        Category category = new Category();
+        category.setId(command.getCategoryId());
+        article.setCategory(category);
+        article.setType(command.getType());
+        article.setFixed(command.isFixed());
+        article.setFixedOrder(command.getFixedOrder());
+        article.setTitle(command.getTitle());
+        article.setContent(command.getContent());
+
         Article savedArticle = articleRepository.save(article);
 
         Document document = Jsoup.parse(command.getContent());
         Iterator<Element> iterator = document.select("img[src*=\"blob:\"]").iterator();
 
         for (MultipartFile multipartFile : command.getInlineImages()) {
-            Attachment attachment = Attachment.create(savedArticle.getId(), Attachment.Type.INLINE_IMAGE, multipartFile);
+            Attachment attachment = new Attachment();
+            attachment.setReferenceId(savedArticle.getId());
+            attachment.setOriginalName(multipartFile.getOriginalFilename());
+            attachment.setName(UUID.randomUUID() + "_" + attachment.getOriginalName());
+            attachment.setPathName(Attachment.Type.INLINE_IMAGE.getPath());
+            attachment.setMimeType(multipartFile.getContentType());
+            attachment.setSize(multipartFile.getSize());
+
             writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), multipartFile.getBytes());
             attachmentRepository.save(attachment);
 
@@ -215,7 +231,14 @@ public class DefaultArticleService implements ArticleService {
 
         // 첨부파일
         for (MultipartFile multipartFile : command.getMultipartFiles()) {
-            Attachment attachment = Attachment.create(savedArticle.getId(), Attachment.Type.ATTACHMENT, multipartFile);
+            Attachment attachment = new Attachment();
+            attachment.setReferenceId(savedArticle.getId());
+            attachment.setOriginalName(multipartFile.getOriginalFilename());
+            attachment.setName(UUID.randomUUID() + "_" + attachment.getOriginalName());
+            attachment.setPathName(Attachment.Type.ATTACHMENT.getPath());
+            attachment.setMimeType(multipartFile.getContentType());
+            attachment.setSize(multipartFile.getSize());
+
             writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), multipartFile.getBytes());
             attachmentRepository.save(attachment);
         }
@@ -256,7 +279,14 @@ public class DefaultArticleService implements ArticleService {
         Iterator<Element> iterator = newContent.select("img[src*=\"blob:\"]").iterator();
 
         for (MultipartFile multipartFile : command.getInlineImages()) {
-            Attachment attachment = Attachment.create(article.getId(), Attachment.Type.INLINE_IMAGE, multipartFile);
+            Attachment attachment = new Attachment();
+            attachment.setReferenceId(article.getId());
+            attachment.setOriginalName(multipartFile.getOriginalFilename());
+            attachment.setName(UUID.randomUUID() + "_" + attachment.getOriginalName());
+            attachment.setPathName(Attachment.Type.INLINE_IMAGE.getPath());
+            attachment.setMimeType(multipartFile.getContentType());
+            attachment.setSize(multipartFile.getSize());
+
             writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), multipartFile.getBytes());
             attachmentRepository.save(attachment);
 
@@ -271,11 +301,26 @@ public class DefaultArticleService implements ArticleService {
 
         Safelist safelist = Safelist.relaxed().preserveRelativeLinks(true);
         command.setContent(Jsoup.clean(newContent.body().html(), "http://localhost", safelist));
-        article.update(command);
+        
+        Category category = new Category();
+        category.setId(command.getCategoryId());
+        article.setCategory(category);
+        article.setType(command.getType());
+        article.setFixed(command.isFixed());
+        article.setFixedOrder(command.getFixedOrder());
+        article.setTitle(command.getTitle());
+        article.setContent(command.getContent());
 
         // 첨부파일
         for (MultipartFile multipartFile : command.getMultipartFiles()) {
-            Attachment attachment = Attachment.create(article.getId(), Attachment.Type.ATTACHMENT, multipartFile);
+            Attachment attachment = new Attachment();
+            attachment.setReferenceId(article.getId());
+            attachment.setOriginalName(multipartFile.getOriginalFilename());
+            attachment.setName(UUID.randomUUID() + "_" + attachment.getOriginalName());
+            attachment.setPathName(Attachment.Type.ATTACHMENT.getPath());
+            attachment.setMimeType(multipartFile.getContentType());
+            attachment.setSize(multipartFile.getSize());
+
             writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), multipartFile.getBytes());
             attachmentRepository.save(attachment);
         }
@@ -339,7 +384,11 @@ public class DefaultArticleService implements ArticleService {
     }
 
     private void increaseView(String articleId) {
-        View view = View.create(articleId);
+        View view = new View();
+        Article article = new Article();
+        article.setId(articleId);
+        view.setArticle(article);
+        
         Object principal = principalProvider.getAuthentication().getPrincipal();
         // 동일인물 중복 조회수 불허
         List<View> views = viewRepository.findAllByArticleIdIn(Collections.singletonList(articleId));

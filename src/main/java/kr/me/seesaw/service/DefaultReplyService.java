@@ -2,6 +2,7 @@ package kr.me.seesaw.service;
 
 import kr.me.seesaw.command.CreateReplyCommand;
 import kr.me.seesaw.command.UpdateReplyCommand;
+import kr.me.seesaw.domain.Article;
 import kr.me.seesaw.domain.Reply;
 import kr.me.seesaw.model.ReplyModel;
 import kr.me.seesaw.repository.ReplyRepository;
@@ -27,7 +28,13 @@ public class DefaultReplyService implements ReplyService {
 
     @Override
     public ReplyModel create(CreateReplyCommand command) {
-        Reply reply = Reply.create(command);
+        Reply reply = new Reply();
+        Article article = new Article();
+        article.setId(command.getArticleId());
+        reply.setArticle(article);
+        reply.setContent(command.getContent());
+        reply.setExposed(command.isExposed());
+
         Reply savedReply = replyRepository.save(reply);
         return new ReplyModel(savedReply);
     }
@@ -35,7 +42,9 @@ public class DefaultReplyService implements ReplyService {
     @Override
     public ReplyModel update(String id, UpdateReplyCommand command) {
         Reply reply = replyRepository.getReferenceById(id);
-        reply.update(command);
+        reply.setContent(command.getContent());
+        reply.setExposed(command.isExposed());
+
         Reply updatedReply = replyRepository.save(reply);
         return new ReplyModel(updatedReply);
     }
