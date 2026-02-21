@@ -7,7 +7,7 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: create-drop  # 테스트마다 스키마를 생성/삭제하여 격리성 확보
+      ddl-auto: none
     properties:
       hibernate:
         highlight_sql: true     # 콘솔 색상 하이라이트(지원 콘솔에서만 표시)
