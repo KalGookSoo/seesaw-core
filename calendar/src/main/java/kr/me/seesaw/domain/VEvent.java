@@ -66,7 +66,7 @@ public class VEvent extends CalendarComponent {
     private String duration;
 
     @ElementCollection
-    @CollectionTable(name = "tb_event_attendees", joinColumns = @JoinColumn(name = "event_id"))
+    @CollectionTable(name = "tb_event_attendee", joinColumns = @JoinColumn(name = "event_id"))
     private List<Attendee> attendees = new ArrayList<>();
 
     public ZonedDateTime getStartWithZone() {

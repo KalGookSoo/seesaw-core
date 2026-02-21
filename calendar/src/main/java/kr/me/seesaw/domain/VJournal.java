@@ -30,7 +30,7 @@ public class VJournal extends CalendarComponent {
     private String summary;
 
     @ElementCollection
-    @CollectionTable(name = "tb_journal_descriptions", joinColumns = @JoinColumn(name = "journal_id"))
+    @CollectionTable(name = "tb_journal_description", joinColumns = @JoinColumn(name = "journal_id"))
     @Column(name = "description", columnDefinition = "TEXT")
     private List<String> descriptions;
 

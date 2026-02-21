@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.lang.Nullable;
@@ -83,7 +84,7 @@ public class DefaultArticleService implements ArticleService {
         List<Article> articles = articleQueryRepository.search((int) pageable.getOffset(), pageable.getPageSize(), sort, search);
         long count = articleQueryRepository.count(search);
 
-        Page<Article> entityPage = new org.springframework.data.domain.PageImpl<>(articles, pageable, count);
+        Page<Article> entityPage = new PageImpl<>(articles, pageable, count);
         Page<ArticleModel> page = entityPage.map(ArticleModel::new);
 
         // 페이지 요청이 아닐 경우 조인하지 않는다.
