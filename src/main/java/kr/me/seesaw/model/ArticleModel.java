@@ -70,7 +70,7 @@ public final class ArticleModel extends AbstractHierarchicalModel<ArticleModel> 
 
     public ArticleModel(Article article) {
         setBaseModel(article);
-        setParentId(article.getParent() != null ? article.getParent().getId() : null);
+        setParentId(article.getParentId());
         this.exposed = article.isExposed();
         this.fixed = article.isFixed();
         this.fixedOrder = article.getFixedOrder();

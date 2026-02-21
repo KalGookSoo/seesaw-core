@@ -48,7 +48,7 @@ public final class ReplyModel extends AbstractHierarchicalModel<ReplyModel> impl
 
     public ReplyModel(Reply reply) {
         setBaseModel(reply);
-        setParentId(reply.getParent() != null ? reply.getParent().getId() : null);
+        setParentId(reply.getParentId());
         this.exposed = reply.isExposed();
         this.content = reply.getContent();
         this.articleId = (reply.getArticle() != null ? reply.getArticle().getId() : null);

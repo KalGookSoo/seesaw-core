@@ -70,7 +70,7 @@ public final class SiteModel extends AbstractHierarchicalModel<SiteModel> implem
 
     public SiteModel(Site site) {
         setBaseModel(site);
-        setParentId(site.getParent() == null ? null : site.getParent().getId());
+        setParentId(site.getParentId());
         name = site.getName();
         domainName = site.getDomainName();
         description = site.getDescription();

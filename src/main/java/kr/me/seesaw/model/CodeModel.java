@@ -28,7 +28,7 @@ public final class CodeModel extends AbstractHierarchicalModel<CodeModel> implem
 
     public CodeModel(Code code) {
         setBaseModel(code);
-        setParentId(code.getParent() != null ? code.getParent().getId() : null);
+        setParentId(code.getParentId());
         this.name = code.getName();
         this.description = code.getDescription();
         this.sequence = code.getSequence();
