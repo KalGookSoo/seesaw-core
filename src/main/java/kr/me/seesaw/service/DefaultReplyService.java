@@ -7,6 +7,8 @@ import kr.me.seesaw.domain.Reply;
 import kr.me.seesaw.model.ReplyModel;
 import kr.me.seesaw.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,17 +19,21 @@ import java.util.NoSuchElementException;
 @Service
 public class DefaultReplyService implements ReplyService {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final ReplyRepository replyRepository;
 
     @Transactional(readOnly = true)
     @Override
     public ReplyModel find(String id) {
+        logger.debug("댓글 조회: id={}", id);
         Reply reply = replyRepository.findById(id).orElseThrow(NoSuchElementException::new);
         return new ReplyModel(reply);
     }
 
     @Override
     public ReplyModel create(CreateReplyCommand command) {
+        logger.info("댓글 생성: command={}", command);
         Reply reply = new Reply();
         Article article = new Article();
         article.setId(command.getArticleId());
@@ -41,6 +47,7 @@ public class DefaultReplyService implements ReplyService {
 
     @Override
     public ReplyModel update(String id, UpdateReplyCommand command) {
+        logger.info("댓글 수정: id={}, command={}", id, command);
         Reply reply = replyRepository.getReferenceById(id);
         reply.setContent(command.getContent());
         reply.setExposed(command.isExposed());
@@ -52,12 +59,14 @@ public class DefaultReplyService implements ReplyService {
     @Transactional(readOnly = true)
     @Override
     public boolean isOwner(String id, String username) {
+        logger.info("댓글 소유자 확인: id={}, username={}", id, username);
         ReplyModel reply = find(id);
         return reply.getCreatedBy().equals(username);
     }
 
     @Override
     public void delete(String id) {
+        logger.info("댓글 삭제: id={}", id);
         Reply reply = replyRepository.getReferenceById(id);
         replyRepository.delete(reply);
     }

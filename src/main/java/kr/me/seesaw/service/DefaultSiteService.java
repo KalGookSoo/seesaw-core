@@ -8,6 +8,8 @@ import kr.me.seesaw.repository.ArticleQueryRepository;
 import kr.me.seesaw.repository.AttachmentRepository;
 import kr.me.seesaw.repository.SiteRepository;
 import kr.me.seesaw.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,8 @@ import java.util.stream.Collectors;
 @Transactional
 @Service
 public class DefaultSiteService implements SiteService {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final String filepath;
 
@@ -50,6 +54,7 @@ public class DefaultSiteService implements SiteService {
     @Transactional(readOnly = true)
     @Override
     public SiteModel getSiteById(String id) {
+        logger.debug("사이트 상세 조회: id={}", id);
         return siteRepository.findById(id)
                 .map(SiteModel::new)
                 .orElseThrow(() -> new NoSuchElementException("사이트를 찾을 수 없습니다. id: " + id));
@@ -58,6 +63,7 @@ public class DefaultSiteService implements SiteService {
     @Transactional(readOnly = true)
     @Override
     public SiteModel getSiteByDomainName(String domainName) {
+        logger.debug("도메인명으로 사이트 조회: domainName={}", domainName);
         return siteRepository.findByDomainName(domainName)
                 .map(SiteModel::new)
                 .orElseThrow(() -> new NoSuchElementException("사이트를 찾을 수 없습니다. domainName: " + domainName));
@@ -66,17 +72,18 @@ public class DefaultSiteService implements SiteService {
     @Transactional(readOnly = true)
     @Override
     public SiteModel getSiteContext(String domainName) {
+        logger.debug("사이트 컨텍스트 조회: domainName={}", domainName);
         Site site = siteRepository.findByDomainName(domainName)
                 .orElseThrow(() -> new NoSuchElementException("사이트를 찾을 수 없습니다. domainName: " + domainName));
         SiteModel siteModel = new SiteModel(site);
 
-        // 프로필 이미지, 배경 이미지 조인
+        logger.debug("프로필 이미지, 배경 이미지 조인");
         attachmentRepository.findAllByReferenceIdIn(Collections.singletonList(site.getId()))
                 .stream()
                 .map(AttachmentModel::new)
                 .forEach(siteModel::addAttachment);
 
-        // 카테고리 조인
+        logger.debug("카테고리 조인");
         site.getCategories()
                 .stream()
                 .filter(Category::isExposed)
@@ -84,7 +91,7 @@ public class DefaultSiteService implements SiteService {
                 .map(CategoryModel::new)
                 .forEach(siteModel::addCategory);
 
-        // 최근 7일 게시글 조인
+        logger.debug("최근 7일 게시글 조인");
         List<String> categoryIds = siteModel.getCategories()
                 .stream()
                 .map(CategoryModel::getId)
@@ -103,7 +110,7 @@ public class DefaultSiteService implements SiteService {
                 .stream()
                 .collect(Collectors.toMap(CategoryModel::getId, Function.identity()));
 
-        // 최근 게시글을 병합하여 상위 카테고리 게시글에 바인딩
+        logger.debug("최근 게시글을 병합하여 상위 카테고리 게시글에 바인딩");
         siteModel.getCategories()
                 .stream()
                 .filter(CategoryModel::isRoot)
@@ -111,7 +118,7 @@ public class DefaultSiteService implements SiteService {
                         .filter(article -> categoryModel.getId().equals(allCategories.get(article.getCategoryId()).getParentId()))
                         .forEach(categoryModel::addRecentArticle));
 
-        // 최근 게시글을 해당 카테고리에도 바인딩
+        logger.debug("최근 게시글을 해당 카테고리에도 바인딩");
         articles.forEach(article -> {
             CategoryModel category = allCategories.get(article.getCategoryId());
             if (category != null) {
@@ -125,10 +132,11 @@ public class DefaultSiteService implements SiteService {
     @Transactional(readOnly = true)
     @Override
     public List<SiteModel> getOwnSites(String username) {
+        logger.debug("소유 사이트 목록 조회: username={}", username);
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new NoSuchElementException("계정을 찾을 수 없습니다. username: " + username));
 
-        // 계정 식별자로 roleMappingRepository.findAllByUserId로 계정에 매핑된 siteId 목록 추출
+        logger.debug("계정 식별자로 roleMappingRepository.findAllByUserId로 계정에 매핑된 siteId 목록 추출");
         List<String> siteIds = user.getRoleMappings()
                 .stream()
                 .map(RoleMapping::getSite)
@@ -143,6 +151,7 @@ public class DefaultSiteService implements SiteService {
 
     @Override
     public SiteModel createSite(CreateSiteCommand command) throws IOException {
+        logger.info("사이트 생성: command={}", command);
         Site site = new Site();
         site.setName(command.getName());
         site.setDomainName(command.getDomainName());
@@ -200,6 +209,7 @@ public class DefaultSiteService implements SiteService {
 
     @Override
     public SiteModel updateSite(String id, CreateSiteCommand command) throws IOException {
+        logger.info("사이트 수정: id={}, command={}", id, command);
         Site site = siteRepository.getReferenceById(id);
         site.setName(command.getName());
         site.setDomainName(command.getDomainName());
@@ -269,6 +279,7 @@ public class DefaultSiteService implements SiteService {
 
     @Override
     public void deleteSite(String id) {
+        logger.info("사이트 삭제: id={}", id);
         // 첨부파일 삭제
         List<Attachment> attachments = attachmentRepository.findAllByReferenceIdIn(Collections.singletonList(id));
         attachmentRepository.deleteAllInBatch(attachments);
@@ -278,6 +289,7 @@ public class DefaultSiteService implements SiteService {
     }
 
     private void writeFile(String pathname, byte[] bytes) {
+        logger.info("파일 쓰기: pathname={}", pathname);
         try {
             FileIOService.write(pathname, bytes);
         } catch (IOException e) {

@@ -9,6 +9,8 @@ import kr.me.seesaw.domain.Site;
 import kr.me.seesaw.model.CategoryModel;
 import kr.me.seesaw.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +24,13 @@ import java.util.NoSuchElementException;
 @Service
 public class DefaultCategoryService implements CategoryService {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     private final CategoryRepository categoryRepository;
 
     @Override
     public CategoryModel createCategory(CreateCategoryCommand command) {
+        logger.info("카테고리 생성: command={}", command);
         Category category = new Category();
         category.setName(command.getName());
         category.setDescription(command.getDescription());
@@ -52,6 +57,7 @@ public class DefaultCategoryService implements CategoryService {
     @Transactional(readOnly = true)
     @Override
     public CategoryModel getCategoryById(String id) {
+        logger.debug("카테고리 조회: id={}", id);
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당 카테고리가 존재하지 않습니다. id: " + id));
         return new CategoryModel(category);
@@ -59,6 +65,7 @@ public class DefaultCategoryService implements CategoryService {
 
     @Override
     public CategoryModel updateCategory(String id, UpdateCategoryCommand command) {
+        logger.info("카테고리 수정: id={}, command={}", id, command);
         Category category = categoryRepository.getReferenceById(id);
         category.setName(command.getName());
         category.setDescription(command.getDescription());
@@ -88,11 +95,13 @@ public class DefaultCategoryService implements CategoryService {
 
     @Override
     public void deleteCategoryById(String id) {
+        logger.info("카테고리 삭제: id={}", id);
         categoryRepository.deleteById(id);
     }
 
     @Override
     public List<CategoryModel> getCategoriesBySiteId(String siteId) {
+        logger.debug("사이트별 카테고리 목록 조회: siteId={}", siteId);
         Sort sort = Sort.by(Sort.Direction.ASC, "sequence");
         Collection<Category> categories = categoryRepository.findAllBySiteId(siteId, sort);
         List<CategoryModel> models = categories.stream()
@@ -103,6 +112,7 @@ public class DefaultCategoryService implements CategoryService {
 
     @Override
     public CategoryModel moveCategory(String id, MoveCategoryCommand command) {
+        logger.info("카테고리 이동: id={}, command={}", id, command);
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당 카테고리가 존재하지 않습니다. id: " + id));
         category.setSequence(command.getSequence());

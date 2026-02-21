@@ -16,6 +16,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.safety.Safelist;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +35,8 @@ import java.util.*;
 @Transactional
 @Service
 public class DefaultArticleService implements ArticleService {
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Value("${kr.me.seesaw.filepath}")
     private final String filepath;
@@ -70,6 +74,7 @@ public class DefaultArticleService implements ArticleService {
     @Transactional(readOnly = true)
     @Override
     public Page<ArticleModel> findAll(Pageable pageable, ArticleSearch search) {
+        logger.debug("게시글 전체 조회: pageable={}, search={}", pageable, search);
         String sort = null;
         if (pageable.getSort().isSorted()) {
             sort = pageable.getSort().toString().replace(":", "");
@@ -120,6 +125,7 @@ public class DefaultArticleService implements ArticleService {
     @Transactional(readOnly = true)
     @Override
     public Page<ArticleModel> findAllByCategoryId(String categoryId, Pageable pageable) {
+        logger.debug("카테고리별 게시글 조회: categoryId={}, pageable={}", categoryId, pageable);
         Page<Article> entityPage = articleRepository.findAllByCategoryId(categoryId, pageable);
         Page<ArticleModel> page = entityPage.map(ArticleModel::new);
 
@@ -155,6 +161,7 @@ public class DefaultArticleService implements ArticleService {
     @Transactional(readOnly = true)
     @Override
     public ArticleModel find(String id) {
+        logger.debug("게시글 상세 조회: id={}", id);
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당 게시글이 존재하지 않습니다."));
         return new ArticleModel(article);
@@ -162,6 +169,7 @@ public class DefaultArticleService implements ArticleService {
 
     @Transactional(readOnly = true)
     public ArticleModel getArticleAggregation(String id) {
+        logger.debug("게시글 애그리게이션 조회: id={}", id);
         Article article = articleRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당 게시글이 존재하지 않습니다."));
         ArticleModel model = new ArticleModel(article);
@@ -191,6 +199,7 @@ public class DefaultArticleService implements ArticleService {
 
     @Override
     public ArticleModel create(CreateArticleCommand command) throws IOException {
+        logger.info("게시글 생성: command={}", command);
 
         // 생성될 게시글의 식별자를 참조하기위해 먼저 게시글을 저장한다.
         Article article = new Article();
@@ -251,6 +260,7 @@ public class DefaultArticleService implements ArticleService {
 
     @Override
     public ArticleModel update(String id, UpdateArticleCommand command) throws IOException {
+        logger.info("게시글 수정: id={}, command={}", id, command);
         Article article = articleRepository.getReferenceById(id);
 
         Document existingContent = Jsoup.parse(article.getContent());
@@ -301,7 +311,7 @@ public class DefaultArticleService implements ArticleService {
 
         Safelist safelist = Safelist.relaxed().preserveRelativeLinks(true);
         command.setContent(Jsoup.clean(newContent.body().html(), "http://localhost", safelist));
-        
+
         Category category = new Category();
         category.setId(command.getCategoryId());
         article.setCategory(category);
@@ -330,6 +340,7 @@ public class DefaultArticleService implements ArticleService {
 
     @Override
     public void delete(String id) {
+        logger.info("게시글 삭제: id={}", id);
         Article article = articleRepository.getReferenceById(id);
         List<Reply> replies = replyRepository.findAllByArticleIdIn(Collections.singletonList(article.getId()));
         replyRepository.deleteAllInBatch(replies);
@@ -346,17 +357,20 @@ public class DefaultArticleService implements ArticleService {
 
     @Override
     public void deleteAll(List<String> ids) {
+        logger.info("게시글 일괄 삭제: ids={}", ids);
         ids.forEach(this::delete);
     }
 
     @Override
     public boolean isOwner(String id, String username) {
+        logger.info("게시글 소유자 확인: id={}, username={}", id, username);
         ArticleModel article = find(id);
         return article.getCreatedBy().equals(username);
     }
 
     @Override
     public List<ArticleModel> getFixedArticles(String categoryId, boolean fixed, Sort sort) {
+        logger.debug("고정 게시글 조회: categoryId={}, fixed={}, sort={}", categoryId, fixed, sort);
         return articleRepository.findAllByCategoryIdAndFixed(categoryId, fixed, sort)
                 .stream()
                 .map(ArticleModel::new)
@@ -366,16 +380,19 @@ public class DefaultArticleService implements ArticleService {
     @Nullable
     @Override
     public ArticleModel getPreviousArticle(ArticleSearch search, LocalDateTime createdDate) {
+        logger.debug("이전 게시글 조회: createdDate={}, search={}", createdDate, search);
         return articleQueryRepository.findFirstNext(search, createdDate, "DESC").map(ArticleModel::new).orElse(null);
     }
 
     @Nullable
     @Override
     public ArticleModel getNextArticle(ArticleSearch search, LocalDateTime createdDate) {
+        logger.debug("다음 게시글 조회: createdDate={}, search={}", createdDate, search);
         return articleQueryRepository.findFirstNext(search, createdDate, "ASC").map(ArticleModel::new).orElse(null);
     }
 
     private void writeFile(String pathname, byte[] bytes) {
+        logger.info("파일 쓰기: pathname={}", pathname);
         try {
             FileIOService.write(pathname, bytes);
         } catch (IOException e) {
@@ -384,11 +401,12 @@ public class DefaultArticleService implements ArticleService {
     }
 
     private void increaseView(String articleId) {
+        logger.info("게시글 조회수 증가: articleId={}", articleId);
         View view = new View();
         Article article = new Article();
         article.setId(articleId);
         view.setArticle(article);
-        
+
         Object principal = principalProvider.getAuthentication().getPrincipal();
         // 동일인물 중복 조회수 불허
         List<View> views = viewRepository.findAllByArticleIdIn(Collections.singletonList(articleId));
