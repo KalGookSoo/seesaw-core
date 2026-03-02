@@ -49,4 +49,11 @@ public final class AttachmentModel extends BaseModel {
     public boolean isAttachment() {
         return Attachment.Type.ATTACHMENT.getPath().equals(pathName);
     }
+
+    public String getFormattedSize() {
+        if (size < 1024) return size + " B";
+        if (size < 1024 * 1024) return String.format("%.1f KB", size / 1024.0);
+        return String.format("%.1f MB", size / (1024.0 * 1024.0));
+    }
+
 }
