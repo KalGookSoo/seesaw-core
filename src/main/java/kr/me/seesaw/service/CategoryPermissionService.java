@@ -4,6 +4,6 @@ import org.springframework.security.acls.model.Permission;
 
 public interface CategoryPermissionService {
 
-    boolean hasPermission(String id, Permission permission);
+    boolean hasPermission(String categoryId, Permission permission);
 
 }
