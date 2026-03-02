@@ -420,4 +420,11 @@ public class DefaultArticleService implements ArticleService, ArticleQueryServic
         return replies.stream().map(ReplyModel::new).toList();
     }
 
+    @Override
+    public List<AttachmentModel> getAttachments(String articleId) {
+        Article article = articleRepository.getReferenceById(articleId);
+        List<Attachment> attachments = attachmentRepository.findAllByReferenceIdIn(Collections.singletonList(article.getId()));
+        return attachments.stream().map(AttachmentModel::new).toList();
+    }
+
 }
