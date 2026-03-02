@@ -12,9 +12,13 @@ public interface AttachmentRepository {
 
     Optional<Attachment> findById(String id);
 
+    Attachment getReferenceById(String id);
+
     List<Attachment> findAllByReferenceIdIn(List<String> referenceIds);
 
     List<Attachment> findAllByIdIn(Collection<String> ids);
+
+    void delete(Attachment attachment);
 
     void deleteAllInBatch(Iterable<Attachment> entities);
 

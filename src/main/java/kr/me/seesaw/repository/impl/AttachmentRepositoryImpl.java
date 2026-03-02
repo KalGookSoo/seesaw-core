@@ -27,6 +27,11 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
     }
 
     @Override
+    public Attachment getReferenceById(String id) {
+        return jpaAttachmentRepository.getReferenceById(id);
+    }
+
+    @Override
     public List<Attachment> findAllByReferenceIdIn(List<String> referenceIds) {
         return jpaAttachmentRepository.findAllByReferenceIdIn(referenceIds);
     }
@@ -34,6 +39,11 @@ public class AttachmentRepositoryImpl implements AttachmentRepository {
     @Override
     public List<Attachment> findAllByIdIn(Collection<String> ids) {
         return jpaAttachmentRepository.findAllByIdIn(ids);
+    }
+
+    @Override
+    public void delete(Attachment attachment) {
+        jpaAttachmentRepository.delete(attachment);
     }
 
     @Override

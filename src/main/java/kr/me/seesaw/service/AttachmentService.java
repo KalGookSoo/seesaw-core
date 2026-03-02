@@ -11,4 +11,6 @@ public interface AttachmentService {
 
     String getAbsolutePath(String pathname, String name);
 
+    void deleteAttachment(String id);
+
 }

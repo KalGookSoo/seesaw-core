@@ -17,6 +17,10 @@ public interface JpaAttachmentRepository extends Repository<Attachment, String> 
 
     List<Attachment> findAllByIdIn(Collection<String> ids);
 
+    void delete(Attachment attachment);
+
     void deleteAllInBatch(Iterable<Attachment> entities);
+
+    Attachment getReferenceById(String id);
 
 }

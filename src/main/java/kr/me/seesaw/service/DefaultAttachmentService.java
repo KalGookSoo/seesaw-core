@@ -81,6 +81,16 @@ public class DefaultAttachmentService implements AttachmentService {
         return filepath + pathname + File.separator + name;
     }
 
+    @Override
+    public void deleteAttachment(String id) {
+        logger.info("첨부파일 삭제: id={}", id);
+        Attachment attachment = attachmentRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 첨부파일: " + id));
+
+        FileIOService.delete(filepath + attachment.getPathName() + File.separator + attachment.getName());
+        attachmentRepository.delete(attachment);
+    }
+
     private void writeFile(String pathname, byte[] bytes) {
         logger.info("파일 쓰기: pathname={}", pathname);
         try {
