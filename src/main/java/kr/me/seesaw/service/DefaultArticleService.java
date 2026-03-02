@@ -343,11 +343,11 @@ public class DefaultArticleService implements ArticleService, ArticleQueryServic
     public void delete(String id) {
         logger.info("게시글 삭제: id={}", id);
         Article article = articleRepository.getReferenceById(id);
-        List<Reply> replies = replyRepository.findAllByArticleIdIn(Collections.singletonList(article.getId()));
+        List<Reply> replies = replyRepository.findAllByArticleIdIn(Collections.singletonList(id));
         replyRepository.deleteAllInBatch(replies);
-        List<View> views = viewRepository.findAllByArticleIdIn(Collections.singletonList(article.getId()));
+        List<View> views = viewRepository.findAllByArticleIdIn(Collections.singletonList(id));
         viewRepository.deleteAllInBatch(views);
-        List<Attachment> attachments = attachmentRepository.findAllByReferenceIdIn(Collections.singletonList(article.getId()));
+        List<Attachment> attachments = attachmentRepository.findAllByReferenceIdIn(Collections.singletonList(id));
         attachmentRepository.deleteAllInBatch(attachments);
         attachments.stream()
                 .map(attachment -> filepath + attachment.getPathName() + File.separator + attachment.getName())
