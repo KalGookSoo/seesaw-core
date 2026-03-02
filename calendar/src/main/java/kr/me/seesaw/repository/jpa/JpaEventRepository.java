@@ -13,4 +13,6 @@ public interface JpaEventRepository extends Repository<VEvent, String> {
 
     Optional<VEvent> findById(String id);
 
+    VEvent getReferenceById(String id);
+
 }

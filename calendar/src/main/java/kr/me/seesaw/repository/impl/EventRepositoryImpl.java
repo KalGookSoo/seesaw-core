@@ -32,6 +32,11 @@ public class EventRepositoryImpl implements EventRepository {
     }
 
     @Override
+    public VEvent getReferenceById(String id) {
+        return jpaEventRepository.getReferenceById(id);
+    }
+
+    @Override
     public Optional<VEvent> findById(String id) {
         return jpaEventRepository.findById(id);
     }

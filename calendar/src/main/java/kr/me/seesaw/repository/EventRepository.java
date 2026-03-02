@@ -10,6 +10,8 @@ public interface EventRepository {
 
     VEvent save(VEvent event);
 
+    VEvent getReferenceById(String id);
+
     Optional<VEvent> findById(String id);
 
     List<VEvent> findAll(EventQuery eventQuery);
