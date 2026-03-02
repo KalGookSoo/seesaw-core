@@ -35,7 +35,7 @@ import java.util.*;
 
 @Transactional
 @Service
-public class DefaultArticleService implements ArticleService {
+public class DefaultArticleService implements ArticleService, ArticleQueryService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -411,6 +411,13 @@ public class DefaultArticleService implements ArticleService {
         Object principal = principalProvider.getAuthentication().getPrincipal();
         // 동일인물 중복 조회수 불허
         List<View> views = viewRepository.findAllByArticleIdIn(Collections.singletonList(articleId));
+    }
+
+    @Override
+    public List<ReplyModel> getReplies(String articleId) {
+        Article article = articleRepository.getReferenceById(articleId);
+        List<Reply> replies = article.getReplies();
+        return replies.stream().map(ReplyModel::new).toList();
     }
 
 }
