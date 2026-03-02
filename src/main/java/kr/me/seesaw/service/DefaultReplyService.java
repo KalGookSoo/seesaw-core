@@ -56,14 +56,6 @@ public class DefaultReplyService implements ReplyService {
         return new ReplyModel(updatedReply);
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public boolean isOwner(String id, String username) {
-        logger.info("댓글 소유자 확인: id={}, username={}", id, username);
-        ReplyModel reply = find(id);
-        return reply.getCreatedBy().equals(username);
-    }
-
     @Override
     public void delete(String id) {
         logger.info("댓글 삭제: id={}", id);

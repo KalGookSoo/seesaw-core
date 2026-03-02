@@ -12,8 +12,6 @@ public interface ReplyService {
 
     ReplyModel update(String id, UpdateReplyCommand command);
 
-    boolean isOwner(String id, String username);
-
     void delete(String id);
 
 }
