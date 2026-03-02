@@ -45,10 +45,6 @@ public class VEvent extends CalendarComponent {
     @Comment("요약/제목")
     private String summary;
 
-    @Column(columnDefinition = "TEXT")
-    @Comment("상세 설명")
-    private String description;
-
     @Comment("장소")
     private String location;
 
