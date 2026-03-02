@@ -13,11 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Transactional
 @Service
-public class DefaultAttachmentService implements AttachmentService {
+public class DefaultAttachmentService implements AttachmentService, AttachmentQueryService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -98,6 +100,15 @@ public class DefaultAttachmentService implements AttachmentService {
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
+    }
+
+    @Override
+    public List<AttachmentModel> getAttachments(String referenceId) {
+        logger.debug("첨부파일 조회: referenceId={}", referenceId);
+        return attachmentRepository.findAllByReferenceIdIn(Collections.singletonList(referenceId))
+                .stream()
+                .map(AttachmentModel::new)
+                .toList();
     }
 
 }
