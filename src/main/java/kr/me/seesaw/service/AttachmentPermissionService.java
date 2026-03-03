@@ -6,4 +6,6 @@ public interface AttachmentPermissionService {
 
     boolean hasPermission(String attachmentId, Permission permission);
 
+    boolean isOwner(String attachmentId);
+
 }

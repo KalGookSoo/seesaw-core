@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.acls.model.Permission;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +37,18 @@ public class DefaultAttachmentPermissionService implements AttachmentPermissionS
         Article article = articleRepository.getReferenceById(attachment.getReferenceId());
         Category category = article.getCategory();
         return permissionEvaluator.hasPermission(principalProvider.getAuthentication(), category.getId(), Category.class.getCanonicalName(), permission);
+    }
+
+    @Override
+    public boolean isOwner(String attachmentId) {
+        logger.info("첨부파일 소유자 확인: attachmentId={}", attachmentId);
+        Authentication authentication = principalProvider.getAuthentication();
+        if (authentication == null) {
+            return false;
+        }
+        String username = authentication.getName();
+        Attachment attachment = attachmentRepository.getReferenceById(attachmentId);
+        return attachment.getCreatedBy().equals(username);
     }
 
 }
