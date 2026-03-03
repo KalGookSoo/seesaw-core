@@ -18,6 +18,9 @@ import java.util.List;
 @NoArgsConstructor
 public final class CategoryModel extends AbstractHierarchicalModel<CategoryModel> implements Hierarchical<CategoryModel, String> {
 
+    @JsonManagedReference
+    private final List<ArticleModel> articles = new ArrayList<>();
+
     @Schema(description = "카테고리 이름", example = "공지사항")
     private String name;
 
@@ -43,17 +46,7 @@ public final class CategoryModel extends AbstractHierarchicalModel<CategoryModel
     private String siteId;
 
     @JsonManagedReference
-    private final List<ArticleModel> articles = new ArrayList<>();
-
-    @JsonManagedReference
     private List<ArticleModel> recentArticles = new ArrayList<>();
-
-    @Override
-    public void addChild(CategoryModel child) {
-        getChildren().add(child);
-        child.setParentId(getId());
-        child.setParent(this);
-    }
 
     public CategoryModel(Category category) {
         setBaseModel(category);
@@ -66,6 +59,13 @@ public final class CategoryModel extends AbstractHierarchicalModel<CategoryModel
         exposed = category.isExposed();
         sequence = category.getSequence();
         siteId = category.getSite().getId();
+    }
+
+    @Override
+    public void addChild(CategoryModel child) {
+        getChildren().add(child);
+        child.setParentId(getId());
+        child.setParent(this);
     }
 
     public void joinArticles(List<ArticleModel> articles) {
@@ -83,6 +83,18 @@ public final class CategoryModel extends AbstractHierarchicalModel<CategoryModel
 
     public void addRecentArticle(ArticleModel article) {
         recentArticles.add(article);
+    }
+
+    @Schema(description = "카테고리 링크 URL")
+    public String getUrl() {
+        if (type != CategoryType.NONE) {
+            return String.format("/articles?categoryType=%s&categoryId=%s", type, getId());
+        }
+        if (getChildren() != null && !getChildren().isEmpty()) {
+            CategoryModel firstChild = getChildren().get(0);
+            return String.format("/articles?categoryType=%s&categoryId=%s", firstChild.getType(), firstChild.getId());
+        }
+        return "#";
     }
 
 }

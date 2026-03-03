@@ -141,4 +141,8 @@ public final class ArticleModel extends AbstractHierarchicalModel<ArticleModel> 
         return !getCreatedDate().isBefore(now.minusDays(7));
     }
 
+    public String getUrl() {
+        return String.format("/articles/%s?categoryId=%s", getId(), categoryId);
+    }
+
 }
