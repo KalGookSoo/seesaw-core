@@ -40,9 +40,10 @@ public interface FileIOService {
      */
     static ByteArrayInputStream read(String absolutePath) throws IOException {
         Path path = Paths.get(absolutePath);
-        InputStream inputStream = Files.newInputStream(path);
-        byte[] bytes = FileCopyUtils.copyToByteArray(inputStream);
-        return new ByteArrayInputStream(bytes);
+        try (InputStream inputStream = Files.newInputStream(path)) {
+            byte[] bytes = FileCopyUtils.copyToByteArray(inputStream);
+            return new ByteArrayInputStream(bytes);
+        }
     }
 
     /**
