@@ -13,8 +13,6 @@ public interface SiteService {
 
     SiteModel getSiteByDomainName(String domainName);
 
-    SiteModel getSiteContext(String domainName);
-
     List<SiteModel> getOwnSites(String username);
 
     SiteModel createSite(CreateSiteCommand command) throws IOException;

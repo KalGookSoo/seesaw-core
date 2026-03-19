@@ -2,9 +2,12 @@ package kr.me.seesaw.service;
 
 import kr.me.seesaw.command.CreateSiteCommand;
 import kr.me.seesaw.core.file.FileIOService;
-import kr.me.seesaw.domain.*;
-import kr.me.seesaw.model.*;
-import kr.me.seesaw.repository.ArticleQueryRepository;
+import kr.me.seesaw.domain.Attachment;
+import kr.me.seesaw.domain.RoleMapping;
+import kr.me.seesaw.domain.Site;
+import kr.me.seesaw.domain.User;
+import kr.me.seesaw.model.AttachmentModel;
+import kr.me.seesaw.model.SiteModel;
 import kr.me.seesaw.repository.AttachmentRepository;
 import kr.me.seesaw.repository.SiteRepository;
 import kr.me.seesaw.repository.UserRepository;
@@ -16,10 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Transactional
 @Service
@@ -33,21 +36,17 @@ public class DefaultSiteService implements SiteService {
 
     private final AttachmentRepository attachmentRepository;
 
-    private final ArticleQueryRepository articleQueryRepository;
-
     private final UserRepository userRepository;
 
     public DefaultSiteService(
             @Value("${kr.me.seesaw.filepath}") String filepath,
             SiteRepository siteRepository,
             AttachmentRepository attachmentRepository,
-            ArticleQueryRepository articleQueryRepository,
             UserRepository userRepository
     ) {
         this.filepath = filepath;
         this.siteRepository = siteRepository;
         this.attachmentRepository = attachmentRepository;
-        this.articleQueryRepository = articleQueryRepository;
         this.userRepository = userRepository;
     }
 
@@ -67,66 +66,6 @@ public class DefaultSiteService implements SiteService {
         return siteRepository.findByDomainName(domainName)
                 .map(SiteModel::new)
                 .orElseThrow(() -> new NoSuchElementException("사이트를 찾을 수 없습니다. domainName: " + domainName));
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public SiteModel getSiteContext(String domainName) {
-        logger.debug("사이트 컨텍스트 조회: domainName={}", domainName);
-        Site site = siteRepository.findByDomainName(domainName)
-                .orElseThrow(() -> new NoSuchElementException("사이트를 찾을 수 없습니다. domainName: " + domainName));
-        SiteModel siteModel = new SiteModel(site);
-
-        logger.debug("프로필 이미지, 배경 이미지 조인");
-        attachmentRepository.findAllByReferenceIdIn(Collections.singletonList(site.getId()))
-                .stream()
-                .map(AttachmentModel::new)
-                .forEach(siteModel::addAttachment);
-
-        logger.debug("카테고리 조인");
-        site.getCategories()
-                .stream()
-                .filter(Category::isExposed)
-                .sorted(Comparator.comparing(Category::getSequence))
-                .map(CategoryModel::new)
-                .forEach(siteModel::addCategory);
-
-        logger.debug("최근 7일 게시글 조인");
-        List<String> categoryIds = siteModel.getCategories()
-                .stream()
-                .map(CategoryModel::getId)
-                .toList();
-        LocalDateTime cutoffDate = LocalDateTime.now().minusDays(7);
-
-        List<ArticleModel> articles = articleQueryRepository.findAllByCategoryId(categoryIds, cutoffDate)
-                .stream()
-                .map(ArticleModel::new)
-                .sorted(Comparator.comparing(BaseModel::getCreatedDate))
-                .toList();
-        siteModel.getCategories()
-                .forEach(categoryModel -> categoryModel.joinArticles(articles));
-
-        Map<String, CategoryModel> allCategories = siteModel.getCategories()
-                .stream()
-                .collect(Collectors.toMap(CategoryModel::getId, Function.identity()));
-
-        logger.debug("최근 게시글을 병합하여 상위 카테고리 게시글에 바인딩");
-        siteModel.getCategories()
-                .stream()
-                .filter(CategoryModel::isRoot)
-                .forEach(categoryModel -> articles.stream()
-                        .filter(article -> categoryModel.getId().equals(allCategories.get(article.getCategoryId()).getParentId()))
-                        .forEach(categoryModel::addRecentArticle));
-
-        logger.debug("최근 게시글을 해당 카테고리에도 바인딩");
-        articles.forEach(article -> {
-            CategoryModel category = allCategories.get(article.getCategoryId());
-            if (category != null) {
-                category.addRecentArticle(article);
-            }
-        });
-
-        return siteModel;
     }
 
     @Transactional(readOnly = true)
