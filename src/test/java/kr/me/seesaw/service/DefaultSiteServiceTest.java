@@ -3,11 +3,9 @@ package kr.me.seesaw.service;
 import kr.me.seesaw.command.CreateSiteCommand;
 import kr.me.seesaw.domain.vo.Address;
 import kr.me.seesaw.model.SiteModel;
-import kr.me.seesaw.repository.ArticleQueryRepository;
 import kr.me.seesaw.repository.AttachmentRepository;
 import kr.me.seesaw.repository.SiteRepository;
 import kr.me.seesaw.repository.UserRepository;
-import kr.me.seesaw.repository.impl.ArticleQueryRepositoryImpl;
 import kr.me.seesaw.repository.impl.SiteRepositoryImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,12 +53,10 @@ class DefaultSiteServiceTest {
     @BeforeEach
     void setUp() {
         String filepath = tempDir + "/";
-        ArticleQueryRepository articleQueryRepository = new ArticleQueryRepositoryImpl(entityManager.getEntityManager());
         siteService = new DefaultSiteService(
                 filepath,
                 siteRepository,
                 attachmentRepository,
-                articleQueryRepository,
                 userRepository
         );
     }

@@ -5,13 +5,13 @@ import kr.me.seesaw.command.UpdateReplyCommand;
 import kr.me.seesaw.domain.Article;
 import kr.me.seesaw.domain.Reply;
 import kr.me.seesaw.model.ReplyModel;
+import kr.me.seesaw.repository.ArticleRepository;
 import kr.me.seesaw.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.NoSuchElementException;
 
 @Transactional
@@ -22,6 +22,8 @@ public class DefaultReplyService implements ReplyService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final ReplyRepository replyRepository;
+    
+    private final ArticleRepository articleRepository;
 
     @Transactional(readOnly = true)
     @Override
@@ -35,8 +37,7 @@ public class DefaultReplyService implements ReplyService {
     public ReplyModel create(CreateReplyCommand command) {
         logger.info("댓글 생성: command={}", command);
         Reply reply = new Reply();
-        Article article = new Article();
-        article.setId(command.getArticleId());
+        Article article = articleRepository.getReferenceById(command.getArticleId());
         reply.setArticle(article);
         reply.setContent(command.getContent());
         reply.setExposed(command.isExposed());

@@ -57,10 +57,10 @@ public class Article extends AbstractHierarchical<Article> {
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
 
-    @OneToMany(mappedBy = "article", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "article")
     private List<Reply> replies = new ArrayList<>();
 
-    @OneToMany(mappedBy = "article", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany(mappedBy = "article")
     private List<View> views = new ArrayList<>();
 
 }
