@@ -55,16 +55,19 @@ public class EventRepositoryImpl implements EventRepository {
         }
 
         if (eventQuery.getStart() != null) {
-            // dtStart >= search.start OR dtEnd >= search.start
-            predicates.add(cb.or(
-                    cb.greaterThanOrEqualTo(event.get("dtStart"), eventQuery.getStart()),
-                    cb.greaterThanOrEqualTo(event.get("dtEnd"), eventQuery.getStart())
+            // dtEnd >= search.start (dtEnd가 null이면 dtStart 사용)
+            predicates.add(cb.greaterThanOrEqualTo(
+                    cb.coalesce(event.get("dtEnd"), event.get("dtStart")),
+                    eventQuery.getStart()
             ));
         }
 
         if (eventQuery.getEnd() != null) {
-            // dtStart <= search.end
-            predicates.add(cb.lessThanOrEqualTo(event.get("dtStart"), eventQuery.getEnd()));
+            // dtStart < search.end (종료 시점 00:00은 불포함하도록 < 사용)
+            predicates.add(cb.lessThan(
+                    event.get("dtStart"),
+                    eventQuery.getEnd()
+            ));
         }
 
         if (StringUtils.hasText(eventQuery.getQuery())) {
