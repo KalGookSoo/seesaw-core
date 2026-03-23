@@ -1,8 +1,8 @@
-package kr.me.seesaw.service;
+package kr.me.seesaw.context;
 
 import org.springframework.security.acls.model.Permission;
 
-public interface CategoryPermissionService {
+public interface CategoryPermissionEvaluator {
 
     boolean hasPermission(String categoryId, Permission permission);
 
