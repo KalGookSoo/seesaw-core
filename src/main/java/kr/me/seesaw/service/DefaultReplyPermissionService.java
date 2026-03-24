@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-@Service
+@Service("replyPermissionService")
 public class DefaultReplyPermissionService implements ReplyPermissionService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
