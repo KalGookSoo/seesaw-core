@@ -4,15 +4,12 @@ import kr.me.seesaw.domain.vo.CategoryType;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Optional;
 
 @Data
 public class ArticleSearch {
-
-    private Pageable pageable;
 
     private String categoryId;
 
