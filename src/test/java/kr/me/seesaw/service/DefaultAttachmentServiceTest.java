@@ -1,9 +1,10 @@
 package kr.me.seesaw.service;
 
 import kr.me.seesaw.command.CreateAttachmentCommand;
+import kr.me.seesaw.config.SeesawProperties;
+import kr.me.seesaw.core.file.LocalFileManager;
 import kr.me.seesaw.domain.Attachment;
 import kr.me.seesaw.model.AttachmentModel;
-import kr.me.seesaw.repository.AttachmentRepository;
 import kr.me.seesaw.repository.impl.AttachmentRepositoryImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,27 +27,31 @@ import java.util.UUID;
 @ActiveProfiles({"test"})
 @DataJpaTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@Import(AttachmentRepositoryImpl.class)
+@Import({AttachmentRepositoryImpl.class, DefaultAttachmentService.class, LocalFileManager.class, SeesawProperties.class})
 class DefaultAttachmentServiceTest {
-
-    private final AttachmentRepository attachmentRepository;
 
     private final TestEntityManager entityManager;
 
-    private AttachmentService attachmentService;
+    private final AttachmentService attachmentService;
+
+    private final SeesawProperties seesawProperties;
 
     @TempDir
     private Path tempDir;
 
-    public DefaultAttachmentServiceTest(AttachmentRepository attachmentRepository, TestEntityManager entityManager) {
-        this.attachmentRepository = attachmentRepository;
+    public DefaultAttachmentServiceTest(
+            TestEntityManager entityManager,
+            AttachmentService attachmentService,
+            SeesawProperties seesawProperties
+    ) {
         this.entityManager = entityManager;
+        this.attachmentService = attachmentService;
+        this.seesawProperties = seesawProperties;
     }
 
     @BeforeEach
     void setUp() {
-        String filepath = tempDir.toString();
-        attachmentService = new DefaultAttachmentService(filepath, attachmentRepository);
+        seesawProperties.setFilepath(tempDir + "/");
     }
 
     @Test

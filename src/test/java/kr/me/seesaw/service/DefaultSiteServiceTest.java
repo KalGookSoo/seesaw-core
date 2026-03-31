@@ -1,12 +1,13 @@
 package kr.me.seesaw.service;
 
 import kr.me.seesaw.command.CreateSiteCommand;
+import kr.me.seesaw.config.SeesawProperties;
+import kr.me.seesaw.core.file.LocalFileManager;
 import kr.me.seesaw.domain.vo.Address;
 import kr.me.seesaw.model.SiteModel;
-import kr.me.seesaw.repository.AttachmentRepository;
-import kr.me.seesaw.repository.SiteRepository;
-import kr.me.seesaw.repository.UserRepository;
+import kr.me.seesaw.repository.impl.AttachmentRepositoryImpl;
 import kr.me.seesaw.repository.impl.SiteRepositoryImpl;
+import kr.me.seesaw.repository.impl.UserRepositoryImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -27,38 +27,27 @@ import java.nio.file.Path;
 @ActiveProfiles({"test"})
 @DataJpaTest
 @TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-@Import(SiteRepositoryImpl.class)
+@Import({DefaultSiteService.class, SeesawProperties.class, SiteRepositoryImpl.class, AttachmentRepositoryImpl.class, UserRepositoryImpl.class, LocalFileManager.class})
 class DefaultSiteServiceTest {
 
     private final TestEntityManager entityManager;
 
-    private final SiteRepository siteRepository;
+    private final SiteService siteService;
 
-    private SiteService siteService;
+    private final SeesawProperties seesawProperties;
 
     @TempDir
     private Path tempDir;
 
-    @MockitoBean
-    private AttachmentRepository attachmentRepository;
-
-    @MockitoBean
-    private UserRepository userRepository;
-
-    public DefaultSiteServiceTest(TestEntityManager entityManager, SiteRepository siteRepository) {
+    public DefaultSiteServiceTest(TestEntityManager entityManager, SiteService siteService, SeesawProperties seesawProperties) {
         this.entityManager = entityManager;
-        this.siteRepository = siteRepository;
+        this.siteService = siteService;
+        this.seesawProperties = seesawProperties;
     }
 
     @BeforeEach
     void setUp() {
-        String filepath = tempDir + "/";
-        siteService = new DefaultSiteService(
-                filepath,
-                siteRepository,
-                attachmentRepository,
-                userRepository
-        );
+        seesawProperties.setFilepath(tempDir + "/");
     }
 
     @Test

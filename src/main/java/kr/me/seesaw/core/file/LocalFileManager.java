@@ -1,5 +1,8 @@
 package kr.me.seesaw.core.file;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
 
 import java.io.ByteArrayInputStream;
@@ -10,20 +13,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-/**
- * 파일 입출력 서비스
- */
-public interface FileIOService {
+@Component
+public class LocalFileManager implements FileManager {
 
-    /**
-     * 파일 쓰기
-     *
-     * @param absolutePath 절대경로
-     * @param data         파일 데이터
-     * @throws IOException 입출력 예외
-     */
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    static void write(String absolutePath, byte[] data) throws IOException {
+    public void write(String absolutePath, byte[] data) throws IOException {
+        logger.info("파일 쓰기: absolutePath={}", absolutePath);
         File file = new File(absolutePath);
         if (file.getParentFile() != null && !file.getParentFile().exists()) {
             file.getParentFile().mkdirs();
@@ -31,14 +29,8 @@ public interface FileIOService {
         FileCopyUtils.copy(data, file);
     }
 
-    /**
-     * 파일 읽기
-     *
-     * @param absolutePath 절대경로
-     * @return 파일 데이터
-     * @throws IOException 입출력 예외
-     */
-    static ByteArrayInputStream read(String absolutePath) throws IOException {
+    @Override
+    public ByteArrayInputStream read(String absolutePath) throws IOException {
         Path path = Paths.get(absolutePath);
         try (InputStream inputStream = Files.newInputStream(path)) {
             byte[] bytes = FileCopyUtils.copyToByteArray(inputStream);
@@ -46,15 +38,9 @@ public interface FileIOService {
         }
     }
 
-    /**
-     * 파일 삭제
-     *
-     * @param absolutePath 절대경로
-     * @return 삭제 성공 여부
-     */
-    static boolean delete(String absolutePath) {
-        File file = new File(absolutePath);
-        return file.delete();
+    @Override
+    public boolean delete(String absolutePath) {
+        return new File(absolutePath).delete();
     }
 
 }

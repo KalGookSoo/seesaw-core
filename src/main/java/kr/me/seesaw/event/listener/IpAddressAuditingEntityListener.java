@@ -2,11 +2,13 @@ package kr.me.seesaw.event.listener;
 
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import jakarta.servlet.http.HttpServletRequest;
 import kr.me.seesaw.annotation.CreatedIp;
 import kr.me.seesaw.annotation.LastModifiedIp;
-import kr.me.seesaw.core.authentication.IpAddressExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -25,7 +27,7 @@ public class IpAddressAuditingEntityListener {
      */
     @PrePersist
     public void setCreatedIp(Object target) {
-        setIpField(target, CreatedIp.class, IpAddressExtractor.getCurrentIp());
+        setIpField(target, CreatedIp.class, resolveCurrentIp());
     }
 
     /**
@@ -35,7 +37,7 @@ public class IpAddressAuditingEntityListener {
      */
     @PreUpdate
     public void setLastModifiedIp(Object target) {
-        setIpField(target, LastModifiedIp.class, IpAddressExtractor.getCurrentIp());
+        setIpField(target, LastModifiedIp.class, resolveCurrentIp());
     }
 
     /**
@@ -61,6 +63,37 @@ public class IpAddressAuditingEntityListener {
                     });
             clazz = clazz.getSuperclass();
         }
+    }
+
+    private String resolveCurrentIp() {
+        try {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attributes != null) {
+                HttpServletRequest request = attributes.getRequest();
+
+                String ip = request.getHeader("X-Forwarded-For");
+                if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+                    int commaIndex = ip.indexOf(',');
+                    return commaIndex > 0 ? ip.substring(0, commaIndex).trim() : ip.trim();
+                }
+
+                String[] headers = {"X-Real-IP", "Proxy-Client-IP", "WL-Proxy-Client-IP", "HTTP_X_FORWARDED_FOR",
+                        "HTTP_X_FORWARDED", "HTTP_X_CLUSTER_CLIENT_IP", "HTTP_CLIENT_IP", "HTTP_FORWARDED_FOR",
+                        "HTTP_FORWARDED", "HTTP_VIA", "REMOTE_ADDR"};
+
+                for (String header : headers) {
+                    ip = request.getHeader(header);
+                    if (ip != null && !ip.isEmpty() && !"unknown".equalsIgnoreCase(ip)) {
+                        return ip.trim();
+                    }
+                }
+
+                return request.getRemoteAddr();
+            }
+        } catch (Exception e) {
+            return "UNKNOWN";
+        }
+        return "UNKNOWN";
     }
 
 }

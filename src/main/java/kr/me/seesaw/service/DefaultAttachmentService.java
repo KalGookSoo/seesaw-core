@@ -1,13 +1,14 @@
 package kr.me.seesaw.service;
 
 import kr.me.seesaw.command.CreateAttachmentCommand;
-import kr.me.seesaw.core.file.FileIOService;
+import kr.me.seesaw.config.SeesawProperties;
+import kr.me.seesaw.core.file.FileManager;
 import kr.me.seesaw.domain.Attachment;
 import kr.me.seesaw.model.AttachmentModel;
 import kr.me.seesaw.repository.AttachmentRepository;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,21 +20,16 @@ import java.util.NoSuchElementException;
 
 @Transactional
 @Service
+@RequiredArgsConstructor
 public class DefaultAttachmentService implements AttachmentService, AttachmentQueryService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final String filepath;
+    private final SeesawProperties seesawProperties;
 
     private final AttachmentRepository attachmentRepository;
 
-    public DefaultAttachmentService(
-            @Value("${kr.me.seesaw.filepath}") String filepath,
-            AttachmentRepository attachmentRepository
-    ) {
-        this.filepath = filepath;
-        this.attachmentRepository = attachmentRepository;
-    }
+    private final FileManager fileManager;
 
     /**
      * 요청된 바이너리 데이터를 파일로 쓰고 데이터베이스 모델로 영속화 후 첨부파일 모델로 변환하여 반환합니다.
@@ -63,7 +59,7 @@ public class DefaultAttachmentService implements AttachmentService, AttachmentQu
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
-        writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), bytes);
+        writeFile(seesawProperties.getFilepath() + attachment.getPathName() + File.separator + attachment.getName(), bytes);
         attachmentRepository.save(attachment);
         return new AttachmentModel(attachment);
     }
@@ -80,7 +76,7 @@ public class DefaultAttachmentService implements AttachmentService, AttachmentQu
     @Override
     public String getAbsolutePath(String pathname, String name) {
         logger.debug("절대 경로 조회: pathname={}, name={}", pathname, name);
-        return filepath + pathname + File.separator + name;
+        return seesawProperties.getFilepath() + pathname + File.separator + name;
     }
 
     @Override
@@ -89,14 +85,14 @@ public class DefaultAttachmentService implements AttachmentService, AttachmentQu
         Attachment attachment = attachmentRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 첨부파일: " + id));
 
-        FileIOService.delete(filepath + attachment.getPathName() + File.separator + attachment.getName());
+        fileManager.delete(seesawProperties.getFilepath() + attachment.getPathName() + File.separator + attachment.getName());
         attachmentRepository.delete(attachment);
     }
 
     private void writeFile(String pathname, byte[] bytes) {
         logger.info("파일 쓰기: pathname={}", pathname);
         try {
-            FileIOService.write(pathname, bytes);
+            fileManager.write(pathname, bytes);
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }

@@ -2,15 +2,19 @@ package kr.me.seesaw.service;
 
 import kr.me.seesaw.command.CreateArticleCommand;
 import kr.me.seesaw.command.UpdateArticleCommand;
+import kr.me.seesaw.config.SeesawProperties;
+import kr.me.seesaw.core.authentication.IpAddressExtractor;
 import kr.me.seesaw.core.authentication.PrincipalProvider;
-import kr.me.seesaw.core.file.FileIOService;
+import kr.me.seesaw.core.file.FileManager;
 import kr.me.seesaw.domain.*;
+import kr.me.seesaw.event.ArticleViewedEvent;
 import kr.me.seesaw.model.ArticleModel;
 import kr.me.seesaw.model.AttachmentModel;
 import kr.me.seesaw.model.ReplyModel;
 import kr.me.seesaw.model.ViewModel;
 import kr.me.seesaw.repository.*;
 import kr.me.seesaw.search.ArticleSearch;
+import lombok.RequiredArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -18,7 +22,7 @@ import org.jsoup.safety.Safelist;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -35,12 +39,12 @@ import java.util.*;
 
 @Transactional
 @Service
+@RequiredArgsConstructor
 public class DefaultArticleService implements ArticleService, ArticleQueryService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Value("${kr.me.seesaw.filepath}")
-    private final String filepath;
+    private final SeesawProperties seesawProperties;
 
     private final ArticleRepository articleRepository;
 
@@ -52,25 +56,13 @@ public class DefaultArticleService implements ArticleService, ArticleQueryServic
 
     private final AttachmentRepository attachmentRepository;
 
+    private final FileManager fileManager;
+
     private final PrincipalProvider principalProvider;
 
-    public DefaultArticleService(
-            @Value("${kr.me.seesaw.filepath}") String filepath,
-            ArticleRepository articleRepository,
-            ArticleQueryRepository articleQueryRepository,
-            ReplyRepository replyRepository,
-            ViewRepository viewRepository,
-            AttachmentRepository attachmentRepository,
-            PrincipalProvider principalProvider
-    ) {
-        this.filepath = filepath;
-        this.articleRepository = articleRepository;
-        this.articleQueryRepository = articleQueryRepository;
-        this.replyRepository = replyRepository;
-        this.viewRepository = viewRepository;
-        this.attachmentRepository = attachmentRepository;
-        this.principalProvider = principalProvider;
-    }
+    private final IpAddressExtractor ipAddressExtractor;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     @Override
@@ -195,6 +187,9 @@ public class DefaultArticleService implements ArticleService, ArticleQueryServic
                 .map(AttachmentModel::new)
                 .toList();
         model.joinAttachments(attachments);
+
+        eventPublisher.publishEvent(new ArticleViewedEvent(id, ipAddressExtractor.getCurrentIp(), principalProvider.getAuthentication().getName()));
+
         return model;
     }
 
@@ -227,7 +222,7 @@ public class DefaultArticleService implements ArticleService, ArticleQueryServic
             attachment.setMimeType(multipartFile.getContentType());
             attachment.setSize(multipartFile.getSize());
 
-            writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), multipartFile.getBytes());
+            fileManager.write(seesawProperties.getFilepath() + attachment.getPathName() + File.separator + attachment.getName(), multipartFile.getBytes());
             attachmentRepository.save(attachment);
 
             String url = "/api/attachments/" + attachment.getId();
@@ -249,7 +244,7 @@ public class DefaultArticleService implements ArticleService, ArticleQueryServic
             attachment.setMimeType(multipartFile.getContentType());
             attachment.setSize(multipartFile.getSize());
 
-            writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), multipartFile.getBytes());
+            fileManager.write(seesawProperties.getFilepath() + attachment.getPathName() + File.separator + attachment.getName(), multipartFile.getBytes());
             attachmentRepository.save(attachment);
         }
 
@@ -285,7 +280,9 @@ public class DefaultArticleService implements ArticleService, ArticleQueryServic
         // 수정하면서 삭제한 이미지를 삭제
         List<Attachment> attachments = attachmentRepository.findAllByIdIn(deletedAttachmentIds);
         attachmentRepository.deleteAllInBatch(attachments);
-        attachments.stream().map(attachment -> filepath + attachment.getPathName() + File.separator + attachment.getName()).forEach(FileIOService::delete);
+        attachments.stream()
+                .map(attachment -> seesawProperties.getFilepath() + attachment.getPathName() + File.separator + attachment.getName())
+                .forEach(fileManager::delete);
 
         Iterator<Element> iterator = newContent.select("img[src*=\"blob:\"]").iterator();
 
@@ -298,7 +295,7 @@ public class DefaultArticleService implements ArticleService, ArticleQueryServic
             attachment.setMimeType(multipartFile.getContentType());
             attachment.setSize(multipartFile.getSize());
 
-            writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), multipartFile.getBytes());
+            fileManager.write(seesawProperties.getFilepath() + attachment.getPathName() + File.separator + attachment.getName(), multipartFile.getBytes());
             attachmentRepository.save(attachment);
 
             String url = "/api/attachments/" + attachment.getId();
@@ -332,7 +329,7 @@ public class DefaultArticleService implements ArticleService, ArticleQueryServic
             attachment.setMimeType(multipartFile.getContentType());
             attachment.setSize(multipartFile.getSize());
 
-            writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), multipartFile.getBytes());
+            fileManager.write(seesawProperties.getFilepath() + attachment.getPathName() + File.separator + attachment.getName(), multipartFile.getBytes());
             attachmentRepository.save(attachment);
         }
 
@@ -350,8 +347,8 @@ public class DefaultArticleService implements ArticleService, ArticleQueryServic
         List<Attachment> attachments = attachmentRepository.findAllByReferenceIdIn(Collections.singletonList(id));
         attachmentRepository.deleteAllInBatch(attachments);
         attachments.stream()
-                .map(attachment -> filepath + attachment.getPathName() + File.separator + attachment.getName())
-                .forEach(FileIOService::delete);
+                .map(attachment -> seesawProperties.getFilepath() + attachment.getPathName() + File.separator + attachment.getName())
+                .forEach(fileManager::delete);
 
         articleRepository.delete(article);
     }
@@ -392,32 +389,13 @@ public class DefaultArticleService implements ArticleService, ArticleQueryServic
         return articleQueryRepository.findFirstNext(search, createdDate, "ASC").map(ArticleModel::new).orElse(null);
     }
 
-    private void writeFile(String pathname, byte[] bytes) {
-        logger.info("파일 쓰기: pathname={}", pathname);
-        try {
-            FileIOService.write(pathname, bytes);
-        } catch (IOException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    private void increaseView(String articleId) {
-        logger.info("게시글 조회수 증가: articleId={}", articleId);
-        View view = new View();
-        Article article = new Article();
-        article.setId(articleId);
-        view.setArticle(article);
-
-        Object principal = principalProvider.getAuthentication().getPrincipal();
-        // 동일인물 중복 조회수 불허
-        List<View> views = viewRepository.findAllByArticleIdIn(Collections.singletonList(articleId));
-    }
-
     @Override
     public List<ReplyModel> getReplies(String articleId) {
-        Article article = articleRepository.getReferenceById(articleId);
-        List<Reply> replies = article.getReplies();
-        return replies.stream().map(ReplyModel::new).toList();
+        return replyRepository.findAllByArticleIdIn(Collections.singletonList(articleId))
+                .stream()
+                .sorted(Comparator.comparing(BaseEntity::getCreatedDate))
+                .map(ReplyModel::new)
+                .toList();
     }
 
     @Override

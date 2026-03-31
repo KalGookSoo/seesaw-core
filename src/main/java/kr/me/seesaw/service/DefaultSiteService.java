@@ -1,7 +1,8 @@
 package kr.me.seesaw.service;
 
 import kr.me.seesaw.command.CreateSiteCommand;
-import kr.me.seesaw.core.file.FileIOService;
+import kr.me.seesaw.config.SeesawProperties;
+import kr.me.seesaw.core.file.FileManager;
 import kr.me.seesaw.domain.Attachment;
 import kr.me.seesaw.domain.RoleMapping;
 import kr.me.seesaw.domain.Site;
@@ -11,9 +12,9 @@ import kr.me.seesaw.model.SiteModel;
 import kr.me.seesaw.repository.AttachmentRepository;
 import kr.me.seesaw.repository.SiteRepository;
 import kr.me.seesaw.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,11 +27,12 @@ import java.util.UUID;
 
 @Transactional
 @Service
+@RequiredArgsConstructor
 public class DefaultSiteService implements SiteService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final String filepath;
+    private final SeesawProperties seesawProperties;
 
     private final SiteRepository siteRepository;
 
@@ -38,17 +40,7 @@ public class DefaultSiteService implements SiteService {
 
     private final UserRepository userRepository;
 
-    public DefaultSiteService(
-            @Value("${kr.me.seesaw.filepath}") String filepath,
-            SiteRepository siteRepository,
-            AttachmentRepository attachmentRepository,
-            UserRepository userRepository
-    ) {
-        this.filepath = filepath;
-        this.siteRepository = siteRepository;
-        this.attachmentRepository = attachmentRepository;
-        this.userRepository = userRepository;
-    }
+    private final FileManager fileManager;
 
     @Transactional(readOnly = true)
     @Override
@@ -119,7 +111,7 @@ public class DefaultSiteService implements SiteService {
             attachment.setMimeType(command.getProfileImage().getContentType());
             attachment.setSize(command.getProfileImage().getSize());
 
-            writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), command.getProfileImage().getBytes());
+            writeFile(seesawProperties.getFilepath() + attachment.getPathName() + File.separator + attachment.getName(), command.getProfileImage().getBytes());
 
             // 영속화
             attachmentRepository.save(attachment);
@@ -137,7 +129,7 @@ public class DefaultSiteService implements SiteService {
             attachment.setMimeType(command.getBackgroundImage().getContentType());
             attachment.setSize(command.getBackgroundImage().getSize());
 
-            writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), command.getBackgroundImage().getBytes());
+            writeFile(seesawProperties.getFilepath() + attachment.getPathName() + File.separator + attachment.getName(), command.getBackgroundImage().getBytes());
 
             // 영속화
             attachmentRepository.save(attachment);
@@ -173,7 +165,7 @@ public class DefaultSiteService implements SiteService {
             // 기존 첨부파일 제거
             List<Attachment> profileImages = attachments.stream().filter(attachment -> Attachment.Type.PROFILE.getPath().equals(attachment.getPathName())).toList();
             attachmentRepository.deleteAllInBatch(profileImages);
-            attachments.stream().map(attachment -> filepath + attachment.getPathName() + File.separator + attachment.getName()).forEach(FileIOService::delete);
+            attachments.stream().map(attachment -> seesawProperties.getFilepath() + attachment.getPathName() + File.separator + attachment.getName()).forEach(fileManager::delete);
 
             // 쓰기
             Attachment attachment = new Attachment();
@@ -184,7 +176,7 @@ public class DefaultSiteService implements SiteService {
             attachment.setMimeType(command.getProfileImage().getContentType());
             attachment.setSize(command.getProfileImage().getSize());
 
-            writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), command.getProfileImage().getBytes());
+            writeFile(seesawProperties.getFilepath() + attachment.getPathName() + File.separator + attachment.getName(), command.getProfileImage().getBytes());
 
             // 영속화
             attachmentRepository.save(attachment);
@@ -196,7 +188,7 @@ public class DefaultSiteService implements SiteService {
             // 기존 첨부파일 제거
             List<Attachment> backgroundImages = attachments.stream().filter(attachment -> Attachment.Type.BACKGROUND_IMAGE.getPath().equals(attachment.getPathName())).toList();
             attachmentRepository.deleteAllInBatch(backgroundImages);
-            attachments.stream().map(attachment -> filepath + attachment.getPathName() + File.separator + attachment.getName()).forEach(FileIOService::delete);
+            attachments.stream().map(attachment -> seesawProperties.getFilepath() + attachment.getPathName() + File.separator + attachment.getName()).forEach(fileManager::delete);
 
             // 쓰기
             Attachment attachment = new Attachment();
@@ -207,7 +199,7 @@ public class DefaultSiteService implements SiteService {
             attachment.setMimeType(command.getBackgroundImage().getContentType());
             attachment.setSize(command.getBackgroundImage().getSize());
 
-            writeFile(filepath + attachment.getPathName() + File.separator + attachment.getName(), command.getBackgroundImage().getBytes());
+            writeFile(seesawProperties.getFilepath() + attachment.getPathName() + File.separator + attachment.getName(), command.getBackgroundImage().getBytes());
 
             // 영속화
             attachmentRepository.save(attachment);
@@ -222,7 +214,7 @@ public class DefaultSiteService implements SiteService {
         // 첨부파일 삭제
         List<Attachment> attachments = attachmentRepository.findAllByReferenceIdIn(Collections.singletonList(id));
         attachmentRepository.deleteAllInBatch(attachments);
-        attachments.stream().map(attachment -> filepath + attachment.getPathName() + File.separator + attachment.getName()).forEach(FileIOService::delete);
+        attachments.stream().map(attachment -> seesawProperties.getFilepath() + attachment.getPathName() + File.separator + attachment.getName()).forEach(fileManager::delete);
 
         siteRepository.deleteById(id);
     }
@@ -230,7 +222,7 @@ public class DefaultSiteService implements SiteService {
     private void writeFile(String pathname, byte[] bytes) {
         logger.info("파일 쓰기: pathname={}", pathname);
         try {
-            FileIOService.write(pathname, bytes);
+            fileManager.write(pathname, bytes);
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
