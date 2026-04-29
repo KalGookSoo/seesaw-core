@@ -1,12 +1,11 @@
 package kr.me.seesaw.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.*;
+import kr.me.seesaw.domain.vo.Email;
 import kr.me.seesaw.domain.vo.ParticipantRole;
 import kr.me.seesaw.domain.vo.ParticipantStatus;
 import lombok.*;
+import org.hibernate.annotations.Comment;
 
 @Embeddable
 @Getter
@@ -17,18 +16,30 @@ import lombok.*;
 @EqualsAndHashCode
 public class Attendee {
 
-    @Column(name = "attendee_email")
-    private String email;
+    @Comment("캘린더 이벤트 식별자")
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "event_id", referencedColumnName = "id")
+    private VEvent event;
 
-    @Column(name = "attendee_cn")
-    private String commonName;
+    @Column(name = "event_id", length = 36, insertable = false, updatable = false, nullable = false)
+    private String eventId;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "id", column = @Column(name = "email_id")),
+            @AttributeOverride(name = "domain", column = @Column(name = "email_domain"))
+    })
+    private Email email;
+
+    @Column(name = "name")
+    private String name;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "attendee_role")
+    @Column(name = "role")
     private ParticipantRole role;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "attendee_partstat")
+    @Column(name = "status")
     private ParticipantStatus status;
 
 }
