@@ -96,15 +96,15 @@ public class DefaultSiteService implements SiteService {
         site.setIntro(command.getIntro());
         site.setContent(command.getContent());
 
-        siteRepository.save(site);
+        Site newSite = siteRepository.insert(site);
 
-        SiteModel siteModel = new SiteModel(site);
+        SiteModel siteModel = new SiteModel(newSite);
 
         // 프로필 이미지
         if (command.hasProfileImage()) {
             // 쓰기
             Attachment attachment = new Attachment();
-            attachment.setReferenceId(site.getId());
+            attachment.setReferenceId(newSite.getId());
             attachment.setOriginalName(command.getProfileImage().getOriginalFilename());
             attachment.setName(UUID.randomUUID() + "_" + attachment.getOriginalName());
             attachment.setPathName(Attachment.Type.INLINE_IMAGE.getPath());
@@ -122,7 +122,7 @@ public class DefaultSiteService implements SiteService {
         if (command.hasBackgroundImage()) {
             // 쓰기
             Attachment attachment = new Attachment();
-            attachment.setReferenceId(site.getId());
+            attachment.setReferenceId(newSite.getId());
             attachment.setOriginalName(command.getBackgroundImage().getOriginalFilename());
             attachment.setName(UUID.randomUUID() + "_" + attachment.getOriginalName());
             attachment.setPathName(Attachment.Type.BACKGROUND_IMAGE.getPath());
@@ -154,7 +154,7 @@ public class DefaultSiteService implements SiteService {
         site.setIntro(command.getIntro());
         site.setContent(command.getContent());
 
-        siteRepository.save(site);
+        siteRepository.update(site);
         SiteModel siteModel = new SiteModel(site);
 
         // 기존 파일 조회

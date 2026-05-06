@@ -26,7 +26,7 @@ public class SiteRepositoryImpl implements SiteRepository {
     }
 
     @Override
-    public Site save(Site site) {
+    public Site insert(Site site) {
         return jpaSiteRepository.save(site);
     }
 
@@ -48,6 +48,11 @@ public class SiteRepositoryImpl implements SiteRepository {
     @Override
     public void deleteById(String id) {
         jpaSiteRepository.deleteById(id);
+    }
+
+    @Override
+    public Site update(Site site) {
+        return jpaSiteRepository.saveAndFlush(site);
     }
 
 }

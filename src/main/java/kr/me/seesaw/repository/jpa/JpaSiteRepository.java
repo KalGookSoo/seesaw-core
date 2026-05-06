@@ -22,4 +22,6 @@ public interface JpaSiteRepository extends Repository<Site, String> {
 
     void deleteById(String id);
 
+    Site saveAndFlush(Site site);
+
 }

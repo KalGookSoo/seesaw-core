@@ -34,14 +34,10 @@ public final class CreateSiteCommand implements Serializable {
 
     @Parameter(description = "설명")
     @Schema(description = "설명", example = "설명")
-    @NotBlank
-    @NotNull
     private final String description;
 
     @Parameter(description = "분류코드")
     @Schema(description = "분류코드", example = "분류코드")
-    @NotBlank
-    @NotNull
     private final String distributionCode;
 
     @Parameter(description = "검색 엔진 노출 여부")
@@ -54,31 +50,22 @@ public final class CreateSiteCommand implements Serializable {
 
     @Parameter(description = "태그")
     @Schema(description = "태그", example = "태그1,태그2")
-    @NotBlank
-    @NotNull
     private final String tags;
 
     @Parameter(description = "주소")
     @Schema(description = "주소")
-    @NotNull
     private final Address address;
 
     @Parameter(description = "연락처")
     @Schema(description = "연락처", example = "010-1234-5678")
-    @NotBlank
-    @NotNull
     private final String contactNumber;
 
     @Parameter(description = "소개글")
     @Schema(description = "소개글", example = "독서모임 홈페이지")
-    @NotBlank
-    @NotNull
     private final String intro;
 
     @Parameter(description = "본문")
     @Schema(description = "본문", example = "독서 모임을 시작으로 대전시에서 주최하는 다양한 문화 및 지원 행사에 참여하고 싶으신 분들 환영합니다!")
-    @NotBlank
-    @NotNull
     private final String content;
 
     @Parameter(description = "프로필 이미지")

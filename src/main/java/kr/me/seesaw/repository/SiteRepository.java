@@ -11,7 +11,7 @@ public interface SiteRepository {
 
     Site getReferenceById(String id);
 
-    Site save(Site site);
+    Site insert(Site site);
 
     Optional<Site> findById(String id);
 
@@ -20,5 +20,7 @@ public interface SiteRepository {
     List<Site> findAllByIdIn(List<String> ids);
 
     void deleteById(String id);
+
+    Site update(Site site);
 
 }
