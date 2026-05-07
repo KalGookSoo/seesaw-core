@@ -2,11 +2,13 @@ package kr.me.seesaw.service;
 
 import kr.me.seesaw.command.CreateSiteCommand;
 import kr.me.seesaw.config.SeesawProperties;
+import kr.me.seesaw.core.authentication.PrincipalProvider;
 import kr.me.seesaw.core.file.FileManager;
 import kr.me.seesaw.domain.Attachment;
 import kr.me.seesaw.domain.RoleMapping;
 import kr.me.seesaw.domain.Site;
 import kr.me.seesaw.domain.User;
+import kr.me.seesaw.event.SiteCreatedEvent;
 import kr.me.seesaw.model.AttachmentModel;
 import kr.me.seesaw.model.SiteModel;
 import kr.me.seesaw.repository.AttachmentRepository;
@@ -15,6 +17,8 @@ import kr.me.seesaw.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +45,10 @@ public class DefaultSiteService implements SiteService {
     private final UserRepository userRepository;
 
     private final FileManager fileManager;
+
+    private final PrincipalProvider principalProvider;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     @Override
@@ -97,6 +105,9 @@ public class DefaultSiteService implements SiteService {
         site.setContent(command.getContent());
 
         Site newSite = siteRepository.insert(site);
+
+        Authentication authentication = principalProvider.getAuthentication();
+        eventPublisher.publishEvent(new SiteCreatedEvent(newSite.getId(), authentication.getName()));
 
         SiteModel siteModel = new SiteModel(newSite);
 
