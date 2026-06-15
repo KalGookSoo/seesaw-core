@@ -1,6 +1,7 @@
 package kr.me.seesaw.service;
 
 import kr.me.seesaw.command.CreateArticleCommand;
+import kr.me.seesaw.command.MoveArticleCommand;
 import kr.me.seesaw.command.UpdateArticleCommand;
 import kr.me.seesaw.config.SeesawProperties;
 import kr.me.seesaw.core.authentication.IpAddressExtractor;
@@ -49,6 +50,8 @@ public class DefaultArticleService implements ArticleService, ArticleQueryServic
     private final ArticleRepository articleRepository;
 
     private final ArticleQueryRepository articleQueryRepository;
+
+    private final CategoryRepository categoryRepository;
 
     private final ReplyRepository replyRepository;
 
@@ -334,6 +337,25 @@ public class DefaultArticleService implements ArticleService, ArticleQueryServic
         }
 
         return new ArticleModel(articleRepository.save(article));
+    }
+
+    @Override
+    public ArticleModel move(String id, MoveArticleCommand command) {
+        logger.info("게시글 이동: id={}, command={}", id, command);
+        Article article = articleRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("해당 게시글이 존재하지 않습니다."));
+
+        Category targetCategory = categoryRepository.findById(command.categoryId())
+                .orElseThrow(() -> new NoSuchElementException("이동할 카테고리가 존재하지 않습니다."));
+
+        if (article.getCategory().getType() != targetCategory.getType()) {
+            throw new IllegalArgumentException("동일한 타입의 카테고리로만 이동할 수 있습니다.");
+        }
+
+        article.setCategory(targetCategory);
+
+        Article savedArticle = articleRepository.save(article);
+        return new ArticleModel(savedArticle);
     }
 
     @Override

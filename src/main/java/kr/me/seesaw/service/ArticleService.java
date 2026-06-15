@@ -1,6 +1,7 @@
 package kr.me.seesaw.service;
 
 import kr.me.seesaw.command.CreateArticleCommand;
+import kr.me.seesaw.command.MoveArticleCommand;
 import kr.me.seesaw.command.UpdateArticleCommand;
 import kr.me.seesaw.model.ArticleModel;
 import kr.me.seesaw.search.ArticleSearch;
@@ -26,6 +27,8 @@ public interface ArticleService {
     ArticleModel create(CreateArticleCommand command) throws IOException;
 
     ArticleModel update(String id, UpdateArticleCommand command) throws IOException;
+
+    ArticleModel move(String id, MoveArticleCommand command);
 
     void delete(String id);
 

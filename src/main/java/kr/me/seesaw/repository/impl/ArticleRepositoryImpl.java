@@ -24,6 +24,11 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     }
 
     @Override
+    public Article update(Article article) {
+        return jpaArticleRepository.saveAndFlush(article);
+    }
+
+    @Override
     public void delete(Article article) {
         jpaArticleRepository.delete(article);
     }

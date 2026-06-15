@@ -13,6 +13,8 @@ public interface JpaArticleRepository extends Repository<Article, String> {
 
     Article save(Article article);
 
+    Article saveAndFlush(Article article);
+
     void delete(Article article);
 
     Optional<Article> findById(String id);
