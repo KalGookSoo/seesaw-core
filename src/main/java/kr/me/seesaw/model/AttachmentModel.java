@@ -52,7 +52,22 @@ public final class AttachmentModel extends BaseModel {
 
     public boolean isPreviewable() {
         if (mimeType == null) return false;
-        return mimeType.startsWith("image/") || "application/pdf".equals(mimeType);
+        return mimeType.startsWith("image/") || "application/pdf".equals(mimeType) || "text/html".equals(mimeType);
+    }
+
+    public String getIconClass() {
+        if (mimeType == null) return "bi-file-earmark";
+        if (mimeType.startsWith("image/")) return "bi-file-earmark-image";
+        if (mimeType.startsWith("video/")) return "bi-file-earmark-play";
+        if (mimeType.startsWith("audio/")) return "bi-file-earmark-music";
+        if ("application/pdf".equals(mimeType)) return "bi-file-earmark-pdf";
+        if ("text/html".equals(mimeType)) return "bi-filetype-html";
+        if (mimeType.contains("msword") || mimeType.contains("wordprocessingml")) return "bi-file-earmark-word";
+        if (mimeType.contains("ms-excel") || mimeType.contains("spreadsheetml")) return "bi-file-earmark-excel";
+        if (mimeType.contains("ms-powerpoint") || mimeType.contains("presentationml")) return "bi-file-earmark-ppt";
+        if (mimeType.contains("zip") || mimeType.contains("archive") || mimeType.contains("compressed")) return "bi-file-earmark-zip";
+        if (mimeType.startsWith("text/")) return "bi-file-earmark-text";
+        return "bi-file-earmark";
     }
 
     public String getFormattedSize() {
