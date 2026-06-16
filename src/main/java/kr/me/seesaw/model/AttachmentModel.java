@@ -52,7 +52,12 @@ public final class AttachmentModel extends BaseModel {
 
     public boolean isPreviewable() {
         if (mimeType == null) return false;
-        return mimeType.startsWith("image/") || "application/pdf".equals(mimeType) || "text/html".equals(mimeType);
+        return mimeType.startsWith("image/") || 
+               mimeType.startsWith("text/") || 
+               "application/pdf".equals(mimeType) ||
+               "application/json".equals(mimeType) ||
+               "application/xml".equals(mimeType) ||
+               "application/javascript".equals(mimeType);
     }
 
     public String getIconClass() {
@@ -62,6 +67,11 @@ public final class AttachmentModel extends BaseModel {
         if (mimeType.startsWith("audio/")) return "bi-file-earmark-music";
         if ("application/pdf".equals(mimeType)) return "bi-file-earmark-pdf";
         if ("text/html".equals(mimeType)) return "bi-filetype-html";
+        if ("text/css".equals(mimeType)) return "bi-filetype-css";
+        if (mimeType.contains("javascript")) return "bi-filetype-js";
+        if (mimeType.contains("json")) return "bi-filetype-json";
+        if (mimeType.contains("xml")) return "bi-filetype-xml";
+        if ("text/plain".equals(mimeType)) return "bi-filetype-txt";
         if (mimeType.contains("msword") || mimeType.contains("wordprocessingml")) return "bi-file-earmark-word";
         if (mimeType.contains("ms-excel") || mimeType.contains("spreadsheetml")) return "bi-file-earmark-excel";
         if (mimeType.contains("ms-powerpoint") || mimeType.contains("presentationml")) return "bi-file-earmark-ppt";
