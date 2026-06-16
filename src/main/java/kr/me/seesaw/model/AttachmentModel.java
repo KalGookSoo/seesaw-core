@@ -50,6 +50,11 @@ public final class AttachmentModel extends BaseModel {
         return Attachment.Type.ATTACHMENT.getPath().equals(pathName);
     }
 
+    public boolean isPreviewable() {
+        if (mimeType == null) return false;
+        return mimeType.startsWith("image/") || "application/pdf".equals(mimeType);
+    }
+
     public String getFormattedSize() {
         if (size < 1024) return size + " B";
         if (size < 1024 * 1024) return String.format("%.1f KB", size / 1024.0);
