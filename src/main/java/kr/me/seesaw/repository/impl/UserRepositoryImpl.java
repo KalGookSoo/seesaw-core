@@ -6,6 +6,7 @@ import kr.me.seesaw.repository.jpa.JpaUserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.Optional;
 
 @Repository
@@ -22,6 +23,11 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<User> findByUsername(String username) {
         return jpaUserRepository.findByUsername(username);
+    }
+
+    @Override
+    public Collection<User> findAllByIdIn(Collection<String> ids) {
+        return jpaUserRepository.findAllByIdIn(ids);
     }
 
 }
