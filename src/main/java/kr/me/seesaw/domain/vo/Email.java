@@ -1,6 +1,5 @@
 package kr.me.seesaw.domain.vo;
 
-
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -28,6 +27,10 @@ public final class Email implements Serializable {
 
     public static Email empty() {
         return new Email(null, null);
+    }
+
+    public boolean isEmpty() {
+        return id == null && domain == null;
     }
 
     @Override
