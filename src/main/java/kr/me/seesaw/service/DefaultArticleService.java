@@ -8,6 +8,7 @@ import kr.me.seesaw.core.authentication.IpAddressExtractor;
 import kr.me.seesaw.core.authentication.PrincipalProvider;
 import kr.me.seesaw.core.file.FileManager;
 import kr.me.seesaw.domain.*;
+import kr.me.seesaw.event.ArticleCreatedEvent;
 import kr.me.seesaw.event.ArticleViewedEvent;
 import kr.me.seesaw.model.ArticleModel;
 import kr.me.seesaw.model.AttachmentModel;
@@ -254,7 +255,11 @@ public class DefaultArticleService implements ArticleService, ArticleQueryServic
         // 인라인이미지 링크를 첨부파일 API로 치환한 본문으로 재할당한다
         Safelist safelist = Safelist.relaxed().preserveRelativeLinks(true);
         article.setContent(Jsoup.clean(document.body().html(), "http://localhost", safelist));
-        return new ArticleModel(articleRepository.save(article));
+
+        ArticleModel model = new ArticleModel(articleRepository.save(article));
+        ArticleCreatedEvent event = new ArticleCreatedEvent(command.getCategoryId(), model.getId(), model.getTitle(), model.getPlainContent());
+        eventPublisher.publishEvent(event);
+        return model;
     }
 
     @Override
