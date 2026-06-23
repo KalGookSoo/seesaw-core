@@ -4,14 +4,18 @@ import kr.me.seesaw.command.CreateReplyCommand;
 import kr.me.seesaw.command.UpdateReplyCommand;
 import kr.me.seesaw.domain.Article;
 import kr.me.seesaw.domain.Reply;
+import kr.me.seesaw.event.ReplyCreatedEvent;
 import kr.me.seesaw.model.ReplyModel;
 import kr.me.seesaw.repository.ArticleRepository;
 import kr.me.seesaw.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
+import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.NoSuchElementException;
 
 @Transactional
@@ -22,8 +26,10 @@ public class DefaultReplyService implements ReplyService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     private final ReplyRepository replyRepository;
-    
+
     private final ArticleRepository articleRepository;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional(readOnly = true)
     @Override
@@ -43,6 +49,8 @@ public class DefaultReplyService implements ReplyService {
         reply.setExposed(command.isExposed());
 
         Reply savedReply = replyRepository.save(reply);
+        ReplyCreatedEvent event = new ReplyCreatedEvent(article.getId(), savedReply.getId(), Jsoup.parse(command.getContent()).text());
+        eventPublisher.publishEvent(event);
         return new ReplyModel(savedReply);
     }
 
