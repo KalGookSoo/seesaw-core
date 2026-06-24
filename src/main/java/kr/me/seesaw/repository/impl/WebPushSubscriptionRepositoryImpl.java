@@ -1,0 +1,38 @@
+package kr.me.seesaw.repository.impl;
+
+import kr.me.seesaw.domain.WebPushSubscription;
+import kr.me.seesaw.repository.WebPushSubscriptionRepository;
+import kr.me.seesaw.repository.jpa.JpaWebPushSubscriptionRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+@RequiredArgsConstructor
+public class WebPushSubscriptionRepositoryImpl implements WebPushSubscriptionRepository {
+
+    private final JpaWebPushSubscriptionRepository jpaWebPushSubscriptionRepository;
+
+    @Override
+    public WebPushSubscription save(WebPushSubscription subscription) {
+        return jpaWebPushSubscriptionRepository.save(subscription);
+    }
+
+    @Override
+    public Optional<WebPushSubscription> findByEndpoint(String endpoint) {
+        return jpaWebPushSubscriptionRepository.findByEndpoint(endpoint);
+    }
+
+    @Override
+    public Optional<WebPushSubscription> findBySiteIdAndUserUsernameAndEndpoint(String siteId, String username, String endpoint) {
+        return jpaWebPushSubscriptionRepository.findBySiteIdAndUserUsernameAndEndpoint(siteId, username, endpoint);
+    }
+
+    @Override
+    public List<WebPushSubscription> findAllBySiteIdAndEnabledTrue(String siteId) {
+        return jpaWebPushSubscriptionRepository.findAllBySiteIdAndEnabledTrue(siteId);
+    }
+
+}
