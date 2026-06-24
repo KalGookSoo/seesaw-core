@@ -8,6 +8,7 @@ import kr.me.seesaw.domain.Attachment;
 import kr.me.seesaw.domain.RoleMapping;
 import kr.me.seesaw.domain.Site;
 import kr.me.seesaw.domain.User;
+import kr.me.seesaw.domain.vo.SiteColor;
 import kr.me.seesaw.event.SiteCreatedEvent;
 import kr.me.seesaw.model.AttachmentModel;
 import kr.me.seesaw.model.SiteModel;
@@ -98,6 +99,8 @@ public class DefaultSiteService implements SiteService {
         site.setDistributionCode(command.getDistributionCode());
         site.setSearchEngineExposed(command.isSearchEngineExposed());
         site.setImageExposed(command.isImageExposed());
+        site.setThemeColor(SiteColor.themeOrDefault(command.getThemeColor()));
+        site.setBackgroundColor(SiteColor.backgroundOrDefault(command.getBackgroundColor()));
         site.setTags(command.getTags());
         site.setAddress(command.getAddress());
         site.setContactNumber(command.getContactNumber());
@@ -159,6 +162,8 @@ public class DefaultSiteService implements SiteService {
         site.setDistributionCode(command.getDistributionCode());
         site.setSearchEngineExposed(command.isSearchEngineExposed());
         site.setImageExposed(command.isImageExposed());
+        site.setThemeColor(SiteColor.themeOrDefault(command.getThemeColor()));
+        site.setBackgroundColor(SiteColor.backgroundOrDefault(command.getBackgroundColor()));
         site.setTags(command.getTags());
         site.setAddress(command.getAddress());
         site.setContactNumber(command.getContactNumber());

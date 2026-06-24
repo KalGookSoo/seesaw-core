@@ -2,19 +2,14 @@ package kr.me.seesaw.domain;
 
 import jakarta.persistence.*;
 import kr.me.seesaw.domain.vo.Address;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import kr.me.seesaw.domain.vo.SiteColor;
+import lombok.*;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Setter
@@ -50,6 +45,16 @@ public class Site extends AbstractHierarchical<Site> {
     @Comment("이미지 노출여부")
     private boolean imageExposed;
 
+    @Comment("테마 색상")
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "theme_color"))
+    private SiteColor themeColor;
+
+    @Comment("배경 색상")
+    @Embedded
+    @AttributeOverride(name = "value", column = @Column(name = "background_color"))
+    private SiteColor backgroundColor;
+
     @Comment("태그")
     private String tags;
 
@@ -78,6 +83,14 @@ public class Site extends AbstractHierarchical<Site> {
 
     public Address getAddress() {
         return address == null ? Address.empty() : address;
+    }
+
+    public SiteColor getThemeColor() {
+        return themeColor == null ? SiteColor.themeDefault() : themeColor;
+    }
+
+    public SiteColor getBackgroundColor() {
+        return backgroundColor == null ? SiteColor.backgroundDefault() : backgroundColor;
     }
 
 }

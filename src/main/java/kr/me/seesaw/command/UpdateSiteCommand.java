@@ -46,6 +46,14 @@ public class UpdateSiteCommand implements Serializable {
     @Schema(description = "이미지 노출 여부", example = "true")
     private boolean imageExposed;
 
+    @Parameter(description = "테마 색상")
+    @Schema(description = "테마 색상", example = "#cc4202")
+    private String themeColor;
+
+    @Parameter(description = "배경 색상")
+    @Schema(description = "배경 색상", example = "#ffffff")
+    private String backgroundColor;
+
     @Parameter(description = "태그")
     @Schema(description = "태그", example = "태그1,태그2")
     @NotBlank

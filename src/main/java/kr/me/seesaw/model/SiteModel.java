@@ -40,6 +40,12 @@ public final class SiteModel extends AbstractHierarchicalModel<SiteModel> implem
     @Schema(description = "이미지 노출여부")
     private final boolean imageExposed;
 
+    @Schema(description = "테마 색상", example = "#cc4202")
+    private final String themeColor;
+
+    @Schema(description = "배경 색상", example = "#ffffff")
+    private final String backgroundColor;
+
     @Schema(description = "태그")
     private final String tags;
 
@@ -77,6 +83,8 @@ public final class SiteModel extends AbstractHierarchicalModel<SiteModel> implem
         distributionCode = site.getDistributionCode();
         searchEngineExposed = site.isSearchEngineExposed();
         imageExposed = site.isImageExposed();
+        themeColor = site.getThemeColor().toString();
+        backgroundColor = site.getBackgroundColor().toString();
         tags = site.getTags();
         address = site.getAddress();
         contactNumber = site.getContactNumber();
