@@ -14,7 +14,7 @@ public class AnonymousPrincipalProvider implements PrincipalProvider {
     public Authentication getAuthentication() {
         return new AnonymousAuthenticationToken(
                 UUID.randomUUID().toString(),
-                User.withUsername("anonymous").build(),
+                User.withUsername("anonymous").password("temp-password").build(),
                 AuthorityUtils.createAuthorityList(RoleName.ROLE_ANONYMOUS.name())
         );
     }
