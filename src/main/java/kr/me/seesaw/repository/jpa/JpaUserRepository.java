@@ -10,6 +10,8 @@ public interface JpaUserRepository extends Repository<User, String> {
 
     User save(User user);
 
+    User getReferenceById(String id);
+
     Optional<User> findByUsername(String username);
 
     Collection<User> findAllByIdIn(Collection<String> ids);

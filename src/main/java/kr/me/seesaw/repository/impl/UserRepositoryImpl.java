@@ -21,6 +21,11 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public User getReferenceById(String id) {
+        return jpaUserRepository.getReferenceById(id);
+    }
+
+    @Override
     public Optional<User> findByUsername(String username) {
         return jpaUserRepository.findByUsername(username);
     }
