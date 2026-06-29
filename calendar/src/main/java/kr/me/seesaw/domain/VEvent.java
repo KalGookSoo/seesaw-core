@@ -51,6 +51,7 @@ public class VEvent extends CalendarComponent {
     private EventStatus status;
 
     @Embedded
+    @Comment("반복 규칙")
     private RecurrenceRule rrule;
 
     @Comment("시간대 식별자")
