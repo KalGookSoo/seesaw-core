@@ -15,4 +15,6 @@ public interface WebPushSubscriptionRepository {
 
     List<WebPushSubscription> findAllBySiteIdAndEnabledTrue(String siteId);
 
+    List<WebPushSubscription> findAllBySiteIdAndUserUsernameAndEnabledTrue(String siteId, String username);
+
 }

@@ -35,4 +35,9 @@ public class WebPushSubscriptionRepositoryImpl implements WebPushSubscriptionRep
         return jpaWebPushSubscriptionRepository.findAllBySiteIdAndEnabledTrue(siteId);
     }
 
+    @Override
+    public List<WebPushSubscription> findAllBySiteIdAndUserUsernameAndEnabledTrue(String siteId, String username) {
+        return jpaWebPushSubscriptionRepository.findAllBySiteIdAndUserUsernameAndEnabledTrue(siteId, username);
+    }
+
 }
