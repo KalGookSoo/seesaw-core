@@ -15,4 +15,6 @@ public interface JpaEventRepository extends Repository<VEvent, String> {
 
     VEvent getReferenceById(String id);
 
+    VEvent saveAndFlush(VEvent event);
+
 }

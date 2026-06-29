@@ -91,4 +91,9 @@ public class EventRepositoryImpl implements EventRepository {
         jpaEventRepository.delete(event);
     }
 
+    @Override
+    public VEvent update(final VEvent event) {
+        return jpaEventRepository.saveAndFlush(event);
+    }
+
 }

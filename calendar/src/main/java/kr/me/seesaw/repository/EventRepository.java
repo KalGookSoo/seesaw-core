@@ -18,4 +18,6 @@ public interface EventRepository {
 
     void delete(VEvent event);
 
+    VEvent update(VEvent event);
+
 }
