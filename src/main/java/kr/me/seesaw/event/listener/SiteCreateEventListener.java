@@ -30,7 +30,7 @@ public class SiteCreateEventListener {
     private final RoleRepository roleRepository;
 
     @EventListener
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRED)
     public void onSiteCreated(SiteCreatedEvent event) {
         log.debug("사이트 생성 이벤트 처리: {}", event);
         Site site = siteRepository.getReferenceById(event.siteId());
