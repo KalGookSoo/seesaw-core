@@ -2,6 +2,7 @@ package kr.me.seesaw.command;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import kr.me.seesaw.domain.vo.ArticleType;
@@ -17,6 +18,8 @@ import java.util.function.Predicate;
 @Schema(description = "게시글 수정 커맨드")
 @Data
 public class UpdateArticleCommand implements Serializable {
+
+    private static final long MAX_FILE_SIZE = 50L * 1024L * 1024L;
 
     @Parameter(description = "카테고리 식별자", required = true)
     @Schema(description = "카테고리 식별자", example = "카테고리 식별자")
@@ -68,6 +71,25 @@ public class UpdateArticleCommand implements Serializable {
         return inlineImages.stream()
                 .filter(Predicate.not(MultipartFile::isEmpty))
                 .toList();
+    }
+
+    @AssertTrue(message = "첨부파일은 최대 50MB까지 업로드할 수 있습니다.")
+    public boolean isMultipartFilesSizeValid() {
+        return isMultipartFilesSizeValid(multipartFiles);
+    }
+
+    @AssertTrue(message = "이미지는 최대 50MB까지 업로드할 수 있습니다.")
+    public boolean isInlineImagesSizeValid() {
+        return isMultipartFilesSizeValid(inlineImages);
+    }
+
+    private boolean isMultipartFilesSizeValid(List<MultipartFile> multipartFiles) {
+        return multipartFiles == null || multipartFiles.stream()
+                .allMatch(this::isMultipartFileSizeValid);
+    }
+
+    private boolean isMultipartFileSizeValid(MultipartFile multipartFile) {
+        return multipartFile == null || multipartFile.isEmpty() || multipartFile.getSize() <= MAX_FILE_SIZE;
     }
 
 }

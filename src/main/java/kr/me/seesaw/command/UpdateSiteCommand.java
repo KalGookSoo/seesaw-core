@@ -2,6 +2,7 @@ package kr.me.seesaw.command;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import kr.me.seesaw.domain.vo.Address;
@@ -13,6 +14,8 @@ import java.io.Serializable;
 @Schema(description = "사이트 수정 커맨드")
 @Data
 public class UpdateSiteCommand implements Serializable {
+
+    private static final long MAX_FILE_SIZE = 50L * 1024L * 1024L;
 
     @Parameter(description = "이름")
     @Schema(description = "이름", example = "이름")
@@ -86,5 +89,10 @@ public class UpdateSiteCommand implements Serializable {
     @Parameter(description = "프로필 이미지")
     @Schema(description = "프로필 이미지")
     private MultipartFile profileImage;
+
+    @AssertTrue(message = "프로필 이미지는 최대 50MB까지 업로드할 수 있습니다.")
+    public boolean isProfileImageSizeValid() {
+        return profileImage == null || profileImage.isEmpty() || profileImage.getSize() <= MAX_FILE_SIZE;
+    }
 
 }

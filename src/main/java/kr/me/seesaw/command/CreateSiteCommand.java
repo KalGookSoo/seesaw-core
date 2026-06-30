@@ -2,6 +2,7 @@ package kr.me.seesaw.command;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import kr.me.seesaw.domain.vo.Address;
@@ -19,6 +20,8 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @Getter
 public final class CreateSiteCommand implements Serializable {
+
+    private static final long MAX_FILE_SIZE = 50L * 1024L * 1024L;
 
     @Parameter(description = "이름")
     @Schema(description = "이름", example = "이름")
@@ -90,6 +93,20 @@ public final class CreateSiteCommand implements Serializable {
 
     public boolean hasBackgroundImage() {
         return null != backgroundImage && !backgroundImage.isEmpty();
+    }
+
+    @AssertTrue(message = "프로필 이미지는 최대 50MB까지 업로드할 수 있습니다.")
+    public boolean isProfileImageSizeValid() {
+        return isMultipartFileSizeValid(profileImage);
+    }
+
+    @AssertTrue(message = "배경 이미지는 최대 50MB까지 업로드할 수 있습니다.")
+    public boolean isBackgroundImageSizeValid() {
+        return isMultipartFileSizeValid(backgroundImage);
+    }
+
+    private boolean isMultipartFileSizeValid(MultipartFile multipartFile) {
+        return multipartFile == null || multipartFile.isEmpty() || multipartFile.getSize() <= MAX_FILE_SIZE;
     }
 
 }
