@@ -13,4 +13,5 @@ dependencies {
     api('org.apache.poi:poi:5.2.5')
     api('org.apache.poi:poi-ooxml:5.2.5')
     api('org.jsoup:jsoup:1.18.1')
+    implementation('org.springframework.security:spring-security-acl')
 }
