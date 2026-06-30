@@ -1,0 +1,46 @@
+package kr.me.seesaw.core.domain.menu;
+
+import jakarta.persistence.*;
+import jakarta.persistence.Index;
+import kr.me.seesaw.core.domain.AbstractHierarchical;
+import kr.me.seesaw.core.domain.mapping.MenuRole;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@EqualsAndHashCode(exclude = {"menuRoles"}, callSuper = true)
+@ToString(exclude = {"menuRoles"})
+
+@Entity
+@Table(name = "tb_menu", indexes = {
+        @Index(columnList = "parent_id")
+})
+@DynamicInsert
+@DynamicUpdate
+@Comment("메뉴")
+public class Menu extends AbstractHierarchical<Menu> {
+
+    @Comment("이름")
+    private String name;
+
+    @Comment("URI")
+    private String uri;
+
+    @Comment("순번")
+    private Integer sequence;
+
+    @OneToMany(mappedBy = "menu", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<MenuRole> menuRoles = new ArrayList<>();
+
+}

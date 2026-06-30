@@ -1,10 +1,10 @@
 package kr.me.seesaw.context;
 
-import kr.me.seesaw.core.authentication.PrincipalProvider;
-import kr.me.seesaw.domain.Article;
-import kr.me.seesaw.domain.Category;
-import kr.me.seesaw.domain.VEvent;
-import kr.me.seesaw.repository.EventRepository;
+import kr.me.seesaw.core.support.authentication.PrincipalProvider;
+import kr.me.seesaw.core.domain.article.Article;
+import kr.me.seesaw.core.domain.category.Category;
+import kr.me.seesaw.core.domain.event.VEvent;
+import kr.me.seesaw.core.domain.event.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
