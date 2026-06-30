@@ -7,12 +7,11 @@ import kr.me.seesaw.domain.Article;
 import kr.me.seesaw.domain.VEvent;
 import kr.me.seesaw.repository.EventRepository;
 import kr.me.seesaw.repository.jpa.JpaEventRepository;
-import kr.me.seesaw.dto.query.EventQuery;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -42,36 +41,36 @@ public class EventRepositoryImpl implements EventRepository {
     }
 
     @Override
-    public List<VEvent> findAll(EventQuery eventQuery) {
+    public List<VEvent> findAll(String categoryId, LocalDateTime start, LocalDateTime end, String query) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<VEvent> query = cb.createQuery(VEvent.class);
-        Root<VEvent> event = query.from(VEvent.class);
+        CriteriaQuery<VEvent> criteriaQuery = cb.createQuery(VEvent.class);
+        Root<VEvent> event = criteriaQuery.from(VEvent.class);
         Join<VEvent, Article> article = event.join("article", JoinType.INNER);
 
         List<Predicate> predicates = new ArrayList<>();
 
-        if (StringUtils.hasText(eventQuery.getCategoryId())) {
-            predicates.add(cb.equal(article.get("categoryId"), eventQuery.getCategoryId()));
+        if (StringUtils.hasText(categoryId)) {
+            predicates.add(cb.equal(article.get("categoryId"), categoryId));
         }
 
-        if (eventQuery.getStart() != null) {
+        if (start != null) {
             // dtEnd >= search.start (dtEnd가 null이면 dtStart 사용)
             predicates.add(cb.greaterThanOrEqualTo(
                     cb.coalesce(event.get("dtEnd"), event.get("dtStart")),
-                    eventQuery.getStart()
+                    start
             ));
         }
 
-        if (eventQuery.getEnd() != null) {
+        if (end != null) {
             // dtStart < search.end (종료 시점 00:00은 불포함하도록 < 사용)
             predicates.add(cb.lessThan(
                     event.get("dtStart"),
-                    eventQuery.getEnd()
+                    end
             ));
         }
 
-        if (StringUtils.hasText(eventQuery.getQuery())) {
-            String pattern = "%" + eventQuery.getQuery() + "%";
+        if (StringUtils.hasText(query)) {
+            String pattern = "%" + query + "%";
             predicates.add(cb.or(
                     cb.like(event.get("summary"), pattern),
                     cb.like(event.get("description"), pattern),
@@ -80,8 +79,8 @@ public class EventRepositoryImpl implements EventRepository {
             ));
         }
 
-        query.where(predicates.toArray(new Predicate[0]));
-        query.orderBy(cb.asc(event.get("dtStart")));
+        criteriaQuery.where(predicates.toArray(new Predicate[0]));
+        criteriaQuery.orderBy(cb.asc(event.get("dtStart")));
 
         return entityManager.createQuery(query).getResultList();
     }

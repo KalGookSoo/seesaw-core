@@ -1,8 +1,8 @@
 package kr.me.seesaw.repository;
 
 import kr.me.seesaw.domain.VEvent;
-import kr.me.seesaw.dto.query.EventQuery;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +14,7 @@ public interface EventRepository {
 
     Optional<VEvent> findById(String id);
 
-    List<VEvent> findAll(EventQuery eventQuery);
+    List<VEvent> findAll(String categoryId, LocalDateTime start, LocalDateTime end, String query);
 
     void delete(VEvent event);
 
