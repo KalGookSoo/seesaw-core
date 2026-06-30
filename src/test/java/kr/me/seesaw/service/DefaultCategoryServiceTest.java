@@ -1,13 +1,13 @@
 package kr.me.seesaw.service;
 
-import kr.me.seesaw.command.CreateCategoryCommand;
-import kr.me.seesaw.command.MoveCategoryCommand;
-import kr.me.seesaw.command.UpdateCategoryCommand;
+import kr.me.seesaw.request.CreateCategoryRequest;
+import kr.me.seesaw.request.MoveCategoryRequest;
+import kr.me.seesaw.request.UpdateCategoryRequest;
 import kr.me.seesaw.config.TestDataInitializerConfig;
 import kr.me.seesaw.domain.Category;
 import kr.me.seesaw.domain.Site;
 import kr.me.seesaw.domain.vo.CategoryType;
-import kr.me.seesaw.model.CategoryModel;
+import kr.me.seesaw.response.CategoryResponse;
 import kr.me.seesaw.repository.CategoryRepository;
 import kr.me.seesaw.repository.SiteRepository;
 import kr.me.seesaw.repository.impl.CategoryRepositoryImpl;
@@ -69,10 +69,10 @@ class DefaultCategoryServiceTest {
     @DisplayName("카테고리 생성 시 카테고리를 반환합니다.")
     void createCategoryShouldReturnCategory() {
         // given
-        CreateCategoryCommand command = createCommand(siteId1, "공지", 0, 0);
+        CreateCategoryRequest command = createCommand(siteId1, "공지", 0, 0);
 
         // when
-        CategoryModel model = categoryService.createCategory(command);
+        CategoryResponse model = categoryService.createCategory(command);
         entityManager.flush();
 
         // then
@@ -86,11 +86,11 @@ class DefaultCategoryServiceTest {
     @DisplayName("ID로 카테고리를 조회하면 해당 카테고리를 반환합니다.")
     void getCategoryByIdShouldReturnCategory() {
         // given
-        CategoryModel saved = categoryService.createCategory(createCommand(siteId1, "게시판A", 0, 0));
+        CategoryResponse saved = categoryService.createCategory(createCommand(siteId1, "게시판A", 0, 0));
         entityManager.flush();
 
         // when
-        CategoryModel found = categoryService.getCategoryById(saved.getId());
+        CategoryResponse found = categoryService.getCategoryById(saved.getId());
 
         // then
         assertNotNull(found);
@@ -115,10 +115,10 @@ class DefaultCategoryServiceTest {
     @DisplayName("카테고리를 수정하면 수정된 값이 반영됩니다.")
     void updateShouldModifyValues() {
         // given
-        CategoryModel saved = categoryService.createCategory(createCommand(siteId1, "게시판B", 0, 1));
+        CategoryResponse saved = categoryService.createCategory(createCommand(siteId1, "게시판B", 0, 1));
         entityManager.flush();
 
-        UpdateCategoryCommand command = UpdateCategoryCommand.builder()
+        UpdateCategoryRequest command = UpdateCategoryRequest.builder()
                 .name("게시판B-수정")
                 .description("설명-수정")
                 .type(CategoryType.BOARD)
@@ -130,7 +130,7 @@ class DefaultCategoryServiceTest {
                 .build();
 
         // when
-        CategoryModel updated = categoryService.updateCategory(saved.getId(), command);
+        CategoryResponse updated = categoryService.updateCategory(saved.getId(), command);
         entityManager.flush();
 
         // then
@@ -147,7 +147,7 @@ class DefaultCategoryServiceTest {
     @DisplayName("카테고리를 삭제하면 더 이상 조회되지 않습니다.")
     void deleteCategoryShouldRemoveEntity() {
         // given
-        CategoryModel saved = categoryService.createCategory(createCommand(siteId1, "삭제대상", 0, 2));
+        CategoryResponse saved = categoryService.createCategory(createCommand(siteId1, "삭제대상", 0, 2));
         entityManager.flush();
 
         // when
@@ -162,7 +162,7 @@ class DefaultCategoryServiceTest {
     @DisplayName("사이트 ID로 카테고리 목록을 조회하면 시퀀스 오름차순과 계층 구조가 적용됩니다.")
     void getCategoriesBySiteIdShouldReturnHierarchicalSortedList() {
         // given: 부모-자식 관계를 만들기 위해 먼저 부모 저장 후 자식의 parentId를 직접 세팅
-        CategoryModel parent = categoryService.createCategory(createCommand(siteId2, "부모", 0, 1));
+        CategoryResponse parent = categoryService.createCategory(createCommand(siteId2, "부모", 0, 1));
         entityManager.flush();
 
         // 영속 엔티티 직접 업데이트가 필요하므로 엔티티 매니저로 parentId를 사용해 저장
@@ -173,7 +173,7 @@ class DefaultCategoryServiceTest {
         entityManager.flush();
 
         // when
-        List<CategoryModel> list = categoryService.getCategoriesBySiteId(siteId2);
+        List<CategoryResponse> list = categoryService.getCategoriesBySiteId(siteId2);
 
         // then
         assertNotNull(list);
@@ -189,13 +189,13 @@ class DefaultCategoryServiceTest {
         List<Site> sites = siteRepository.findAll();
         List<Category> categories = sites.get(0).getCategories();
         Category category = categories.get(0);
-        MoveCategoryCommand moveCategoryCommand = MoveCategoryCommand.builder()
+        MoveCategoryRequest moveCategoryCommand = MoveCategoryRequest.builder()
                 .parentId(Optional.ofNullable(category.getParent()).map(Category::getId).orElse(null))
                 .sequence(3)
                 .build();
 
         // when
-        CategoryModel movedCategory = categoryService.moveCategory(category.getId(), moveCategoryCommand);
+        CategoryResponse movedCategory = categoryService.moveCategory(category.getId(), moveCategoryCommand);
         entityManager.flush();
         entityManager.clear();
 
@@ -203,8 +203,8 @@ class DefaultCategoryServiceTest {
         Assertions.assertEquals(3, movedCategory.getSequence());
     }
 
-    private CreateCategoryCommand createCommand(String siteId, String name, int siteExposedOrder, int sequence) {
-        return CreateCategoryCommand.builder()
+    private CreateCategoryRequest createCommand(String siteId, String name, int siteExposedOrder, int sequence) {
+        return CreateCategoryRequest.builder()
                 .name(name)
                 .description("description")
                 .type(CategoryType.NONE)

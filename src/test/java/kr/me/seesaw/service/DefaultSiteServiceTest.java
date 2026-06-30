@@ -1,13 +1,13 @@
 package kr.me.seesaw.service;
 
-import kr.me.seesaw.command.CreateSiteCommand;
+import kr.me.seesaw.request.CreateSiteRequest;
 import kr.me.seesaw.config.SeesawProperties;
 import kr.me.seesaw.core.authentication.AnonymousPrincipalProvider;
 import kr.me.seesaw.core.file.LocalFileManager;
 import kr.me.seesaw.domain.Site;
 import kr.me.seesaw.domain.vo.Address;
 import kr.me.seesaw.domain.vo.SiteColor;
-import kr.me.seesaw.model.SiteModel;
+import kr.me.seesaw.response.SiteResponse;
 import kr.me.seesaw.repository.impl.AttachmentRepositoryImpl;
 import kr.me.seesaw.repository.impl.SiteRepositoryImpl;
 import kr.me.seesaw.repository.impl.UserRepositoryImpl;
@@ -65,7 +65,7 @@ class DefaultSiteServiceTest {
     @DisplayName("사이트 생성 시 사이트 모델을 반환한다.")
     void createSiteShouldReturnSiteModel() throws IOException {
         // given
-        CreateSiteCommand createSiteCommand = new CreateSiteCommand(
+        CreateSiteRequest createSiteCommand = new CreateSiteRequest(
                 "site-1",
                 "",
                 "",
@@ -84,7 +84,7 @@ class DefaultSiteServiceTest {
         );
 
         // when
-        SiteModel siteModel = siteService.createSite(createSiteCommand);
+        SiteResponse siteModel = siteService.createSite(createSiteCommand);
         entityManager.flush();
 
         // then
@@ -97,7 +97,7 @@ class DefaultSiteServiceTest {
     @DisplayName("사이트 생성 시 색상이 비어 있으면 기본 색상을 반환한다.")
     void createSiteShouldUseDefaultColorsWhenColorsAreBlank() throws IOException {
         // given
-        CreateSiteCommand createSiteCommand = new CreateSiteCommand(
+        CreateSiteRequest createSiteCommand = new CreateSiteRequest(
                 "site-1",
                 "",
                 "",
@@ -116,7 +116,7 @@ class DefaultSiteServiceTest {
         );
 
         // when
-        SiteModel siteModel = siteService.createSite(createSiteCommand);
+        SiteResponse siteModel = siteService.createSite(createSiteCommand);
         entityManager.flush();
 
         // then
@@ -128,7 +128,7 @@ class DefaultSiteServiceTest {
     @DisplayName("사이트 생성 시 올바르지 않은 색상은 예외를 던진다.")
     void createSiteShouldThrowExceptionWhenColorIsInvalid() {
         // given
-        CreateSiteCommand createSiteCommand = new CreateSiteCommand(
+        CreateSiteRequest createSiteCommand = new CreateSiteRequest(
                 "site-1",
                 "",
                 "",
@@ -159,7 +159,7 @@ class DefaultSiteServiceTest {
         site.setDomainName("site-1.local");
         entityManager.persistAndFlush(site);
 
-        CreateSiteCommand updateSiteCommand = new CreateSiteCommand(
+        CreateSiteRequest updateSiteCommand = new CreateSiteRequest(
                 "site-1-updated",
                 "site-1-updated.local",
                 "",
@@ -178,7 +178,7 @@ class DefaultSiteServiceTest {
         );
 
         // when
-        SiteModel siteModel = siteService.updateSite(site.getId(), updateSiteCommand);
+        SiteResponse siteModel = siteService.updateSite(site.getId(), updateSiteCommand);
         entityManager.flush();
 
         // then

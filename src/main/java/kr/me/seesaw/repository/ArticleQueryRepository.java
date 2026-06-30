@@ -1,16 +1,19 @@
 package kr.me.seesaw.repository;
 
 import kr.me.seesaw.domain.Article;
-import kr.me.seesaw.search.ArticleSearch;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface ArticleQueryRepository extends QueryRepository<Article, ArticleSearch> {
+public interface ArticleQueryRepository {
+
+    List<Article> search(int offset, int limit, String sort, String categoryId, String keyField, String keyWord);
+
+    long count(String categoryId, String keyField, String keyWord);
 
     List<Article> findAllByCategoryId(List<String> categoryIds, LocalDateTime createdDate);
 
-    Optional<Article> findFirstNext(ArticleSearch search, LocalDateTime createdDate, String sortOrder);
+    Optional<Article> findFirstNext(String categoryId, String keyField, String keyWord, LocalDateTime createdDate, String sortOrder);
 
 }

@@ -1,10 +1,10 @@
 package kr.me.seesaw.service;
 
-import kr.me.seesaw.command.CreateAttachmentCommand;
+import kr.me.seesaw.request.CreateAttachmentRequest;
 import kr.me.seesaw.config.SeesawProperties;
 import kr.me.seesaw.core.file.LocalFileManager;
 import kr.me.seesaw.domain.Attachment;
-import kr.me.seesaw.model.AttachmentModel;
+import kr.me.seesaw.response.AttachmentResponse;
 import kr.me.seesaw.repository.impl.AttachmentRepositoryImpl;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,10 +61,10 @@ class DefaultAttachmentServiceTest {
         String referenceId = UUID.randomUUID().toString();
         Attachment.Type type = Attachment.Type.ATTACHMENT;
         MultipartFile multipartFile = new MockMultipartFile("profileImage", "profile-image.jpeg", MediaType.IMAGE_JPEG_VALUE, new byte[4]);
-        CreateAttachmentCommand createAttachmentCommand = new CreateAttachmentCommand(referenceId, type, multipartFile);
+        CreateAttachmentRequest createAttachmentCommand = new CreateAttachmentRequest(referenceId, type, multipartFile);
 
         // when
-        AttachmentModel attachmentModel = attachmentService.createAttachment(createAttachmentCommand);
+        AttachmentResponse attachmentModel = attachmentService.createAttachment(createAttachmentCommand);
         entityManager.flush();
 
         // then
@@ -78,13 +78,13 @@ class DefaultAttachmentServiceTest {
         String referenceId = UUID.randomUUID().toString();
         Attachment.Type type = Attachment.Type.ATTACHMENT;
         MultipartFile multipartFile = new MockMultipartFile("profileImage", "profile-image.jpeg", MediaType.IMAGE_JPEG_VALUE, new byte[4]);
-        CreateAttachmentCommand createAttachmentCommand = new CreateAttachmentCommand(referenceId, type, multipartFile);
+        CreateAttachmentRequest createAttachmentCommand = new CreateAttachmentRequest(referenceId, type, multipartFile);
         String id = attachmentService.createAttachment(createAttachmentCommand).getId();
         entityManager.flush();
         entityManager.clear();
 
         // when
-        AttachmentModel attachmentModel = attachmentService.getAttachmentById(id);
+        AttachmentResponse attachmentModel = attachmentService.getAttachmentById(id);
 
         // then
         Assertions.assertEquals(id, attachmentModel.getId());

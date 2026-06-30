@@ -1,8 +1,13 @@
 package kr.me.seesaw.repository;
 
 import kr.me.seesaw.domain.Site;
-import kr.me.seesaw.search.SiteSearch;
 
-public interface SiteQueryRepository extends QueryRepository<Site, SiteSearch> {
+import java.util.List;
+
+public interface SiteQueryRepository {
+
+    List<Site> search(int offset, int limit, String sort);
+
+    long count();
 
 }

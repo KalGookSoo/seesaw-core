@@ -2,8 +2,6 @@ package kr.me.seesaw.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import kr.me.seesaw.command.CreateReplyCommand;
-import kr.me.seesaw.command.UpdateReplyCommand;
 import lombok.*;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicInsert;

@@ -7,7 +7,6 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import kr.me.seesaw.domain.Site;
 import kr.me.seesaw.repository.SiteQueryRepository;
-import kr.me.seesaw.search.SiteSearch;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -20,7 +19,7 @@ public class SiteQueryRepositoryImpl implements SiteQueryRepository {
     private final EntityManager em;
 
     @Override
-    public List<Site> search(int offset, int limit, String sort, SiteSearch siteSearch) {
+    public List<Site> search(int offset, int limit, String sort) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Site> cq = cb.createQuery(Site.class);
         Root<Site> site = cq.from(Site.class);
@@ -35,7 +34,7 @@ public class SiteQueryRepositoryImpl implements SiteQueryRepository {
     }
 
     @Override
-    public long count(SiteSearch siteSearch) {
+    public long count() {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Long> cq = cb.createQuery(Long.class);
         Root<Site> site = cq.from(Site.class);
