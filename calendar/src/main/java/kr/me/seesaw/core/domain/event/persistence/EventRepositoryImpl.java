@@ -7,6 +7,7 @@ import kr.me.seesaw.core.domain.article.Article;
 import kr.me.seesaw.core.domain.event.EventRepository;
 import kr.me.seesaw.core.domain.event.VEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -40,7 +41,7 @@ public class EventRepositoryImpl implements EventRepository {
     }
 
     @Override
-    public List<VEvent> findAll(String categoryId, LocalDateTime start, LocalDateTime end, String query) {
+    public List<VEvent> findAll(String categoryId, @Nullable LocalDateTime start, @Nullable LocalDateTime end, @Nullable String query) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<VEvent> criteriaQuery = cb.createQuery(VEvent.class);
         Root<VEvent> event = criteriaQuery.from(VEvent.class);
@@ -81,7 +82,7 @@ public class EventRepositoryImpl implements EventRepository {
         criteriaQuery.where(predicates.toArray(new Predicate[0]));
         criteriaQuery.orderBy(cb.asc(event.get("dtStart")));
 
-        return entityManager.createQuery(query, VEvent.class).getResultList();
+        return entityManager.createQuery(criteriaQuery).getResultList();
     }
 
     @Override

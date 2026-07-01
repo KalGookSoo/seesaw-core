@@ -1,5 +1,7 @@
 package kr.me.seesaw.core.domain.event;
 
+import org.springframework.lang.Nullable;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +14,7 @@ public interface EventRepository {
 
     Optional<VEvent> findById(String id);
 
-    List<VEvent> findAll(String categoryId, LocalDateTime start, LocalDateTime end, String query);
+    List<VEvent> findAll(String categoryId, @Nullable LocalDateTime start, @Nullable LocalDateTime end, @Nullable String query);
 
     void delete(VEvent event);
 
