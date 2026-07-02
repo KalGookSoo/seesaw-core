@@ -1,4 +1,4 @@
-package kr.me.seesaw.core.support.jsoup;
+package kr.me.seesaw.core.support.pattern;
 
 public interface PatternMatcher {
 

@@ -1,6 +1,6 @@
 package kr.me.seesaw;
 
-import kr.me.seesaw.core.support.jsoup.PatternMatcher;
+import kr.me.seesaw.core.support.pattern.PatternMatcher;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
