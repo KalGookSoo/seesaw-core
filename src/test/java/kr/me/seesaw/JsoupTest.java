@@ -59,7 +59,7 @@ public class JsoupTest {
         // When
         Document document = Jsoup.parse(input);
         Elements images = document.select("img[src]");
-        String inlineImagePattern = "/api/attachments/(" + PatternMatcher.UUID + ")$";
+        String inlineImagePattern = "/api/attachments/(" + PatternMatcher.UUID_V4 + ")$";
         Pattern pattern = Pattern.compile(inlineImagePattern);
         List<String> attachmentIds = new ArrayList<>();
         for (Element image : images) {
