@@ -43,6 +43,11 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     }
 
     @Override
+    public List<Article> findAllByCategoryIdInAndExposed(List<String> categoryIds, boolean exposed, Sort sort) {
+        return jpaArticleRepository.findAllByCategoryIdInAndExposed(categoryIds, exposed, sort);
+    }
+
+    @Override
     public List<Article> findAllByCategoryIdAndFixed(String categoryId, boolean fixed, Sort sort) {
         return jpaArticleRepository.findAllByCategoryIdAndFixed(categoryId, fixed, sort);
     }

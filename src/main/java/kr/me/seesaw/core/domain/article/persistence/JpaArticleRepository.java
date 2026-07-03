@@ -23,6 +23,8 @@ public interface JpaArticleRepository extends Repository<Article, String> {
 
     Page<Article> findAllByCategoryId(String categoryId, Pageable pageable);
 
+    List<Article> findAllByCategoryIdInAndExposed(List<String> categoryIds, boolean exposed, Sort sort);
+
     List<Article> findAllByCategoryIdAndFixed(String categoryId, boolean fixed, Sort sort);
 
 }
