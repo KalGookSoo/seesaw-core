@@ -43,7 +43,7 @@ public class Attachment extends BaseEntity {
     @Comment("크기")
     private long size;
 
-    private static String generateName(String originName) {
+    public String generateName(String originName) {
         return String.format("%s_%s", UUID.randomUUID(), originName);
     }
 
