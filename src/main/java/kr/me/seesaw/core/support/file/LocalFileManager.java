@@ -8,9 +8,12 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 public class LocalFileManager implements FileManager {
 
@@ -33,6 +36,18 @@ public class LocalFileManager implements FileManager {
         try (InputStream inputStream = Files.newInputStream(path)) {
             byte[] bytes = FileCopyUtils.copyToByteArray(inputStream);
             return new ByteArrayInputStream(bytes);
+        }
+    }
+
+    @Override
+    public ByteArrayInputStream read(String absolutePath, long start, long length) throws IOException {
+        Path path = Paths.get(absolutePath);
+        try (SeekableByteChannel channel = Files.newByteChannel(path, StandardOpenOption.READ)) {
+            channel.position(start);
+            ByteBuffer buffer = ByteBuffer.allocate((int) length);
+            // SeekableByteChannel#read는 한 번에 버퍼를 다 채우지 않을 수 있어 반복 호출한다.
+            while (buffer.hasRemaining() && channel.read(buffer) != -1) ;
+            return new ByteArrayInputStream(buffer.array(), 0, buffer.position());
         }
     }
 
