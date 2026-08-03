@@ -55,12 +55,17 @@ public class Attachment extends BaseEntity {
         return pathName.equals(Type.ATTACHMENT.getPath());
     }
 
+    public boolean isInlineVideo() {
+        return pathName.equals(Type.INLINE_VIDEO.getPath());
+    }
+
     @Getter
     @AllArgsConstructor
     public enum Type {
         PROFILE("/profiles"),
         BACKGROUND_IMAGE("/backgroundImages"),
         INLINE_IMAGE("/images"),
+        INLINE_VIDEO("/videos"),
         ATTACHMENT("/attachments");
 
         private final String path;
