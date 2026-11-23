@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -18,8 +17,8 @@ public class RoleMappingRepositoryImpl implements RoleMappingRepository {
         return jpaRoleMappingRepository.findAllBySiteIdAndRoleNameIn(siteId, roleNames);
     }
 
-    public Optional<RoleMapping> findByUserIdAndSiteId(String userId, String siteId) {
-        return jpaRoleMappingRepository.findByUserIdAndSiteId(userId, siteId);
+    public Collection<RoleMapping> findAllByUserIdAndSiteId(String userId, String siteId) {
+        return jpaRoleMappingRepository.findAllByUserIdAndSiteId(userId, siteId);
     }
 
     public void deleteByUserIdAndSiteId(String userId, String siteId) {
