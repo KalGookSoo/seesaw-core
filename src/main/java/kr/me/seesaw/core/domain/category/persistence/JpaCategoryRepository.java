@@ -23,6 +23,8 @@ public interface JpaCategoryRepository extends Repository<Category, String> {
 
     Collection<Category> findAllBySiteId(String siteId, Sort sort);
 
+    Collection<Category> findAllBySiteIdAndExposed(String siteId, boolean exposed, Sort sort);
+
     @Query("""
             select category from Category category
             where category.site.id = :siteId

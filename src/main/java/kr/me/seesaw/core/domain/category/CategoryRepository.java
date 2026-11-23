@@ -19,6 +19,8 @@ public interface CategoryRepository {
 
     Collection<Category> findAllBySiteId(String siteId, Sort sort);
 
+    Collection<Category> findAllBySiteIdAndExposed(String siteId, boolean exposed, Sort sort);
+
     List<Category> search(String siteId, String keyword, Pageable pageable);
 
     void flush();

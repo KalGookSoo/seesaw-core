@@ -43,6 +43,11 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     }
 
     @Override
+    public Collection<Category> findAllBySiteIdAndExposed(String siteId, boolean exposed, Sort sort) {
+        return jpaCategoryRepository.findAllBySiteIdAndExposed(siteId, exposed, sort);
+    }
+
+    @Override
     public List<Category> search(String siteId, String keyword, Pageable pageable) {
         return jpaCategoryRepository.search(siteId, keyword, pageable);
     }
