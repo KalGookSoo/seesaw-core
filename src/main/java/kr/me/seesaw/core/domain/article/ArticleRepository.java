@@ -25,6 +25,8 @@ public interface ArticleRepository {
 
     List<Article> search(String siteId, String keyword, Pageable pageable);
 
+    long countSearch(String siteId, String keyword);
+
     Article getReferenceById(String id);
 
 }

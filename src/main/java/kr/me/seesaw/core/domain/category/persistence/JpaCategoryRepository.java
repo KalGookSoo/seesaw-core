@@ -35,6 +35,15 @@ public interface JpaCategoryRepository extends Repository<Category, String> {
             """)
     List<Category> search(@Param("siteId") String siteId, @Param("keyword") String keyword, Pageable pageable);
 
+    @Query("""
+            select count(category) from Category category
+            where category.site.id = :siteId
+              and category.exposed = true
+              and (lower(category.name) like lower(concat('%', :keyword, '%'))
+                   or lower(category.description) like lower(concat('%', :keyword, '%')))
+            """)
+    long countSearch(@Param("siteId") String siteId, @Param("keyword") String keyword);
+
     void flush();
 
 }

@@ -39,4 +39,13 @@ public interface JpaArticleRepository extends Repository<Article, String> {
             """)
     List<Article> search(@Param("siteId") String siteId, @Param("keyword") String keyword, Pageable pageable);
 
+    @Query("""
+            select count(article) from Article article
+            where article.category.site.id = :siteId
+              and article.exposed = true
+              and (lower(article.title) like lower(concat('%', :keyword, '%'))
+                   or lower(article.content) like lower(concat('%', :keyword, '%')))
+            """)
+    long countSearch(@Param("siteId") String siteId, @Param("keyword") String keyword);
+
 }

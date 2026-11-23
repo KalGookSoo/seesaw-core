@@ -23,6 +23,8 @@ public interface CategoryRepository {
 
     List<Category> search(String siteId, String keyword, Pageable pageable);
 
+    long countSearch(String siteId, String keyword);
+
     void flush();
 
 }

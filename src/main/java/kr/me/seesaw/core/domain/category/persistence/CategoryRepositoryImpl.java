@@ -53,6 +53,11 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     }
 
     @Override
+    public long countSearch(String siteId, String keyword) {
+        return jpaCategoryRepository.countSearch(siteId, keyword);
+    }
+
+    @Override
     public void flush() {
         jpaCategoryRepository.flush();
     }

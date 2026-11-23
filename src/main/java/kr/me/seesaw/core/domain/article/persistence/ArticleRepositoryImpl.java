@@ -58,6 +58,11 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     }
 
     @Override
+    public long countSearch(String siteId, String keyword) {
+        return jpaArticleRepository.countSearch(siteId, keyword);
+    }
+
+    @Override
     public Article getReferenceById(String id) {
         return jpaArticleRepository.getReferenceById(id);
     }
