@@ -23,6 +23,8 @@ public interface ArticleRepository {
 
     List<Article> findAllByCategoryIdAndFixed(String categoryId, boolean fixed, Sort sort);
 
+    List<Article> search(String siteId, String keyword, Pageable pageable);
+
     Article getReferenceById(String id);
 
 }

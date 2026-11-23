@@ -3,10 +3,12 @@ package kr.me.seesaw.core.domain.category.persistence;
 import kr.me.seesaw.core.domain.category.Category;
 import kr.me.seesaw.core.domain.category.CategoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -38,6 +40,11 @@ public class CategoryRepositoryImpl implements CategoryRepository {
     @Override
     public Collection<Category> findAllBySiteId(String siteId, Sort sort) {
         return jpaCategoryRepository.findAllBySiteId(siteId, sort);
+    }
+
+    @Override
+    public List<Category> search(String siteId, String keyword, Pageable pageable) {
+        return jpaCategoryRepository.search(siteId, keyword, pageable);
     }
 
     @Override

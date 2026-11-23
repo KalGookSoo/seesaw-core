@@ -53,6 +53,11 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     }
 
     @Override
+    public List<Article> search(String siteId, String keyword, Pageable pageable) {
+        return jpaArticleRepository.search(siteId, keyword, pageable);
+    }
+
+    @Override
     public Article getReferenceById(String id) {
         return jpaArticleRepository.getReferenceById(id);
     }
