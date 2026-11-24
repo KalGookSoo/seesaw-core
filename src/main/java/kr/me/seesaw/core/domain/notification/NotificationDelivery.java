@@ -40,26 +40,33 @@ public class NotificationDelivery extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "notification_id", nullable = false)
+    @Comment("알림")
     private Notification notification;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
+    @Comment("전달 채널")
     private NotificationChannel channel;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
+    @Comment("전달 상태")
     private NotificationDeliveryStatus status = NotificationDeliveryStatus.PENDING;
 
     @Column(name = "attempt_count", nullable = false)
+    @Comment("전달 시도 횟수")
     private int attemptCount;
 
     @Column(name = "delivered_at")
+    @Comment("전달 완료 일시")
     private LocalDateTime deliveredAt;
 
     @Column(name = "next_attempt_at")
+    @Comment("다음 전달 시도 일시")
     private LocalDateTime nextAttemptAt;
 
     @Column(name = "failure_reason", length = 1000)
+    @Comment("전달 실패 사유")
     private String failureReason;
 
 }

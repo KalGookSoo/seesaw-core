@@ -39,17 +39,21 @@ public class NotificationSubscription extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "site_id", nullable = false)
+    @Comment("사이트")
     private Site site;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
+    @Comment("계정")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
+    @Comment("카테고리")
     private Category category;
 
     @Column(nullable = false)
+    @Comment("게시판 알림 구독 활성화 여부")
     private boolean enabled = true;
 
     public void enable() {

@@ -40,23 +40,29 @@ public class NotificationPreference extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "site_id", nullable = false)
+    @Comment("사이트")
     private Site site;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
+    @Comment("계정")
     private User user;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
+    @Comment("알림 유형")
     private NotificationType type;
 
     @Column(name = "in_app_enabled", nullable = false)
+    @Comment("서비스 내부 알림함·알림 벨 활성화 여부")
     private boolean inAppEnabled = true;
 
     @Column(name = "web_push_enabled", nullable = false)
+    @Comment("웹 푸시 알림 활성화 여부")
     private boolean webPushEnabled;
 
     @Column(name = "email_enabled", nullable = false)
+    @Comment("이메일 알림 활성화 여부")
     private boolean emailEnabled;
 
 }
