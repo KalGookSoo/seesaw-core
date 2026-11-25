@@ -13,6 +13,13 @@ import java.util.Optional;
 
 public interface JpaArticleRepository extends Repository<Article, String> {
 
+    @Query("""
+            select a from Article a
+            where a.createdBy = :username and a.category.id in :categoryIds
+              and a.exposed = true
+            """)
+    Page<Article> findActivity(@Param("username") String username, @Param("categoryIds") List<String> categoryIds, Pageable pageable);
+
     Article save(Article article);
 
     Article saveAndFlush(Article article);

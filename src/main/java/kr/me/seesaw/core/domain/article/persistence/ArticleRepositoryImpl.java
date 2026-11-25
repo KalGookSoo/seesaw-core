@@ -18,6 +18,11 @@ public class ArticleRepositoryImpl implements ArticleRepository {
     private final JpaArticleRepository jpaArticleRepository;
 
     @Override
+    public Page<Article> findActivity(String username, List<String> categoryIds, Pageable pageable) {
+        return jpaArticleRepository.findActivity(username, categoryIds, pageable);
+    }
+
+    @Override
     public Article save(Article article) {
         return jpaArticleRepository.save(article);
     }

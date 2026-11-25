@@ -4,6 +4,8 @@ import kr.me.seesaw.core.domain.reply.Reply;
 import kr.me.seesaw.core.domain.reply.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +15,11 @@ import java.util.Optional;
 public class ReplyRepositoryImpl implements ReplyRepository {
 
     private final JpaReplyRepository jpaReplyRepository;
+
+    @Override
+    public Page<Reply> findActivity(String username, List<String> categoryIds, Pageable pageable) {
+        return jpaReplyRepository.findActivity(username, categoryIds, pageable);
+    }
 
     @Override
     public Reply save(Reply reply) {

@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public interface ArticleRepository {
 
+    Page<Article> findActivity(String username, List<String> categoryIds, Pageable pageable);
+
     Article save(Article article);
 
     Article update(Article article);

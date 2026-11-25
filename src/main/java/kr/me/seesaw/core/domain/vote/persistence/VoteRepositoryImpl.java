@@ -7,12 +7,19 @@ import kr.me.seesaw.core.domain.vote.Vote;
 import kr.me.seesaw.core.domain.vote.VoteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Repository
 @RequiredArgsConstructor
 public class VoteRepositoryImpl implements VoteRepository {
 
     private final JpaVoteRepository jpaVoteRepository;
+
+    @Override
+    public Page<Vote> findActivity(String username, List<String> categoryIds, Pageable pageable) {
+        return jpaVoteRepository.findActivity(username, categoryIds, pageable);
+    }
 
     @Override
     public Vote save(Vote vote) {
