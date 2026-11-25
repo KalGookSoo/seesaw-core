@@ -48,6 +48,9 @@ public class VEvent extends CalendarComponent {
     @Comment("장소")
     private String location;
 
+    @Comment("상세 장소")
+    private String locationDetail;
+
     @Enumerated(EnumType.STRING)
     @Comment("상태")
     private EventStatus status;
